@@ -1,139 +1,73 @@
 import { h, render } from 'preact-cycle';
 
-const ADD_TRACKER_ITEM = ({
-  // jshint ignore:start
-  tracker: {
-    items,
-    inputText,
-    ...trackerProps
-  }, ...props
-}) => ({
-  tracker: {
-    items: items.concat(inputText),
-    inputText: '',
-    ...trackerProps
-  }, ...props
-  // jshint ignore:end
+const SEARCH = ({enteredQuery, query, engines}) => ({
+  query: enteredQuery,
+  enteredQuery,
+  engines: engines.map(engine => {
+    engine.url = engine.queryUrl + enteredQuery;
+    return engine;
+  })
 });
 
-const SET_TRACKER_TEXT = ({
-  // jshint ignore:start
-  tracker: {
-    inputText,
-    ...trackerProps
-  },
-  ...props
-}, event) => ({
-  tracker: {
-    inputText: event.target.value,
-    ...trackerProps
-  },
-  ...props
-  // jshint ignore:end
+const QUERY_CHANGED = ({enteredQuery, query, engines}, {target:{value}}) => ({
+  enteredQuery: value,
+  query,
+  engines
 });
 
-const fromEvent = (prev, event) => event.target.value;
-
-const Tracker = ({tracker:{items, inputText}}, {mutation}) => (
+const MultiSearch = ({engines}) => (
   // jshint ignore:start
-  <tracker>
-    {items.map(item => <item>{item}</item>)}
-    <TrackerInput inputText={inputText} />
-  </tracker>
+  <multi-select>
+    <Query />
+    <Engines />
+  </multi-select>
   // jshint ignore:end
 );
 
-const TrackerInput = ({inputText}, {mutation}) => (
+const Query = (_, {enteredQuery, mutation}) => (
   // jshint ignore:start
-  <tracker-input>
-    <form onSubmit={mutation(ADD_TRACKER_ITEM)} action="javascript:">
-      <input placeholder="New item..." value={inputText} onInput={mutation(SET_TRACKER_TEXT)} autoFocus />
+  <query>
+    <form onSubmit={mutation(SEARCH)} action="javascript:">
+      <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
-  </tracker-input>
+  </query>
   // jshint ignore:end
 );
 
-const Info = ({items}, {info: {metrics}}) => (
+const Engines = (_, {engines}) => (
   // jshint ignore:start
-  <info>
-    <headers>
-      {metrics.map(metric => <Metric metric={metric} />)}
-    </headers>
-    <bars>
-      {metrics.map(metric => <Bar value={Math.random() * 100} />)}
-    </bars>
-  </info>
+  <engines>
+    {engines.map(engine => <Engine engine={engine} />)}
+  </engines>
   // jshint ignore:end
 );
 
-const Metric = ({metric: {name, units}}) => (
+const Engine = ({enteredQuery, engine: {name, url}}) => (
   // jshint ignore:start
-  <metric>{name} ({units[0]})</metric>
-  // jshint ignore:end
-);
-
-const Bar = ({value}) => (
-  // jshint ignore:start
-  <bar style={{'height': `${value}%`}}>bar</bar>
-  // jshint ignore:end
-);
-
-const SideBySide = ({tracker, info}) => (
-  // jshint ignore:start
-  <side-by-side>
-    <Tracker tracker={tracker} />
-    <Info info={info} />
-  </side-by-side>
+  <engine>
+    <name>{name}</name>
+    {url ? <iframe src={url} /> : undefined}
+  </engine>
   // jshint ignore:end
 );
 
 render(
   // jshint ignore:start
-  SideBySide, {
-    tracker: {items: [], text: ''},
-    info: {
-      items: [],
-      metrics: [{
-        name: 'Calories',
-        units: ['kcal']
-      },{
-        name: 'Saturated Fat',
-        units: ['g'],
-        group: 'Total Fat'
-      },{
-        name: 'Trans Fat',
-        units: ['g']
-      },{
-        name: 'Monounsaturated Fat',
-        units: ['g'],
-        group: 'Unsaturated Fat'
-      },{
-        name: 'Polyunsaturated Fat',
-        units: ['g'],
-        group: 'Unsaturated Fat'
-      },{
-        name: 'Sugars',
-        units: ['g']
-      },{
-        name: 'Soluble Fiber',
-        units: ['g']
-      },{
-        name: 'Insoluble Fiber',
-        units: ['g']
-      },{
-        name: 'Other Carbohydrates',
-        units: ['g']
-      },{
-        name: 'Protein',
-        units: ['g']
-      },{
-        name: 'Sodium',
-        units: ['mg']
-      },{
-        name: 'Potassium',
-        units: ['mg']
-      }]
-    },
+  MultiSearch, {
+    query: '',
+    engines: [{
+      'name': 'Google',
+      'queryUrl': 'https://google.com/search?q='
+    },{
+      'name': 'DuckDuckGo',
+      'queryUrl': 'https://duckduckgo.com?q='
+    },{
+      'name': 'Bing',
+      'queryUrl': 'https://bing.com?q='
+    },{
+      'name': 'Yahoo',
+      'queryUrl': 'https://search.yahoo.com/search?p='
+    }],
   }, document.body
   // jshint ignore:end
 );
