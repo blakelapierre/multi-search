@@ -46,7 +46,7 @@ const Engine = ({enteredQuery, engine: {name, url}}) => (
   // jshint ignore:start
   <engine>
     <name>{name}</name>
-    {url ? <iframe src={url} /> : undefined}
+    {url ? <iframe src={url} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
   </engine>
   // jshint ignore:end
 );
