@@ -4,7 +4,7 @@ const SEARCH = ({enteredQuery, query, engines}) => ({
   query: enteredQuery,
   enteredQuery,
   engines: engines.map(engine => {
-    engine.url = engine.queryUrl + enteredQuery;
+    if (enteredQuery) engine.url = engine.queryUrl + enteredQuery;
     return engine;
   })
 });
@@ -53,8 +53,8 @@ const Engine = ({enteredQuery, engine: {name, url}}) => (
 
 render(
   // jshint ignore:start
-  MultiSearch, {
-    query: '',
+  MultiSearch, SEARCH({
+    enteredQuery: window.location.search.substr(1).split('=')[1] || '',
     engines: [{
       'name': 'Google',
       'queryUrl': 'https://google.com/search?q='
@@ -68,6 +68,6 @@ render(
       'name': 'Yahoo',
       'queryUrl': 'https://search.yahoo.com/search?p='
     }],
-  }, document.body
+  }), document.body
   // jshint ignore:end
 );

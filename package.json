@@ -1,7 +1,7 @@
 {
-  "name": "base-preact-cycle",
+  "name": "multi-search-www",
   "description": "",
-  "repository": "https://github.com/blakelapierre/base-preact-cycle",
+  "repository": "https://github.com/blakelapierre/multi-search-www",
   "version": "0.0.1",
   "dependencies": {
     "preact-cycle": "^0.5.1"
