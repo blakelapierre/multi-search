@@ -17,17 +17,21 @@ multi-select {
   flex-direction: column;
 
   query {
-    height: 1.25em;
+    flex: 0 0 auto;
 
     display: flex;
 
     form {
-      flex: 1 1 auto;
+      flex: 1 0 auto;
 
       display: flex;
 
       input {
-        flex: 1 1 auto;
+        height: 1.25em;
+
+        flex: 1 0 auto;
+
+        display: block;
 
         text-align: center;
 
@@ -60,10 +64,10 @@ multi-select {
         position: absolute;
         flex: 1 1 auto;
 
-        width: 75%;
-        height: 75%;
+        width: 60%;
+        height: 60%;
 
-        transform: scale(0.6666);
+        transform: scale(0.825);
         transform-origin: 50% 50%;
       }
     }

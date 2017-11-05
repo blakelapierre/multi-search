@@ -44,7 +44,7 @@ const Engines = (_, {engines}) => (
 
 const Engine = ({enteredQuery, engine: {name, url}}) => (
   // jshint ignore:start
-  <engine>
+  <engine onMouseOver={event => console.log(event)}>
     <name>{name}</name>
     {url ? <iframe src={url} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
   </engine>
