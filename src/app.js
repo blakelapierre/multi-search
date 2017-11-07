@@ -9,11 +9,20 @@ const SEARCH = ({enteredQuery, query, engines}) => ({
   })
 });
 
-const QUERY_CHANGED = ({enteredQuery, query, engines}, {target:{value}}) => ({
+// jshint ignore:start
+const QUERY_CHANGED = ({enteredQuery, ...p}, {target:{value}}) => ({
   enteredQuery: value,
-  query,
-  engines
+  ...p
 });
+// jshint ignore:end
+
+// const QUERY_CHANGED = (_, {target:{value}}) => { _.enteredQuery = value; },
+//       SEARCH = (_) => { 
+//         _.query = _.enteredQuery;
+//         _.engines.forEach(engine => {
+//           if (_.query) engine.url = engine.queryUrl + _.query;
+//         });
+//       };
 
 const MultiSearch = ({engines}) => (
   // jshint ignore:start
@@ -42,9 +51,9 @@ const Engines = (_, {engines}) => (
   // jshint ignore:end
 );
 
-const Engine = ({enteredQuery, engine: {name, url}}) => (
+const Engine = ({enteredQuery, engine: {name, url}}, {mutation}) => (
   // jshint ignore:start
-  <engine onMouseOver={event => console.log(event)}>
+  <engine >
     <name>{name}</name>
     {url ? <iframe src={url} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
   </engine>
