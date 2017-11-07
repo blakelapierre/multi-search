@@ -4,35 +4,30 @@ import engines from './engines';
 
 const document: any = {};
 
-export default async () => {
-  const browser = await puppeteer.launch();
+export default async (query = 'test', partialResults) => {
+  const browser = await puppeteer.launch(),
+        results = await Promise.all(search(query, browser, partialResults)),
+           urls = results.reduce((urls, {name, results}, i) => {
+                    return results.reduce((urls, {url}, i) => {
+                      (urls[url] = urls[url] || []).push([name, i]);
+                      return urls;
+                    }, urls);
+                  }, {});
 
-  const results = await Promise.all(search('test', browser));
-
-  
-  const urls = results.reduce((urls, {name, results}, i) => {
-    return results.reduce((urls, {url}, i) => {
-      (urls[url] = urls[url] || []).push([name, i]);
-      return urls;
-    }, urls);
-  }, {});
-
-  console.log(urls);
+  return {urls, results};
 };
 
-function search(query, browser) {
+function search(query, browser, partialResults) {
   return engines.map(async ({name, queryUrl, evaluator}) => {
     const page = await browser.newPage();
     
-    page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
+    // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
 
     await page.goto(`${queryUrl}${encodeURI(query)}`);
     
     const results = await page.evaluate(evaluator);
   
-    const resultsToPrint = 2;
-    console.log(`${name} (${results.length} total results [showing first ${resultsToPrint}]):\n`);
-    if (results) console.log(`  ${results.slice(0, resultsToPrint).map(result => `${result.titles[0]} (${result.url})\n    ${result.snippet}`).join('\n\n  ')}\n`);
+    partialResults({name, results});
   
     await page.close();
 
