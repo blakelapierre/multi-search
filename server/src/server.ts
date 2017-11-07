@@ -5,16 +5,16 @@ const document: any = {};
 export default async () => {
   const browser = await puppeteer.launch();
 
-  await Promise.all(search(engines, browser));
+  await Promise.all(search('test', browser));
 };
 
-function search(engines, browser) {
+function search(query, browser) {
   return engines.map(async ({name, queryUrl, evaluator}) => {
     const page = await browser.newPage();
     
     page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
 
-    await page.goto(`${queryUrl}test`);
+    await page.goto(`${queryUrl}${encodeURI(query)}`);
     
     const results = await page.evaluate(evaluator);
   
