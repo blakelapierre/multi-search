@@ -18,8 +18,9 @@ function search(query, browser) {
     
     const results = await page.evaluate(evaluator);
   
+    const resultsToPrint = 2;
     console.log(`${name}\n`);
-    if (results) console.log(`  ${results.slice(0, 2).map(result => `${result.titles[0]} (${result.url})\n    ${result.snippet}`).join('\n\n  ')}\n`);
+    if (results) console.log(`  ${results.slice(0, resultsToPrint).map(result => `${result.titles[0]} (${result.url})\n    ${result.snippet}`).join('\n\n  ')}\n`);
   
     await page.close();
   });
