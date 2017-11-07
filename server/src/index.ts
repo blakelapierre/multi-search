@@ -2,7 +2,12 @@ import server from './server';
 
 
 server('test', partialResults)
-  .then(printResults)
+  .then(use(({urls}) => {
+    const list = Object.keys(urls).map(url => [url, urls[url]]);
+    list.sort(([_, a], [__, b]) => b.length - a.length);
+    console.log(list);
+  }))
+  .then(use(printResults))
   .catch(error => console.log('error', error));
 
 function partialResults({name, results}) {
@@ -13,4 +18,11 @@ function partialResults({name, results}) {
 
 function printResults({urls, results}) {
   console.log(urls);
+}
+
+function use(fn) {
+  return arg => {
+    fn(arg);
+    return arg;
+  };
 }
