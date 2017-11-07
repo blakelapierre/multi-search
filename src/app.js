@@ -9,6 +9,10 @@ const SEARCH = ({enteredQuery, query, engines}) => ({
   })
 });
 
+const TOGGLE_VIEW = (_) => {
+  _.view = _.view === 'iframe' ? '' : 'iframe';
+};
+
 // jshint ignore:start
 const QUERY_CHANGED = ({enteredQuery, ...p}, {target:{value}}) => ({
   enteredQuery: value,
@@ -36,6 +40,7 @@ const MultiSearch = ({engines}) => (
 const Query = (_, {enteredQuery, mutation}) => (
   // jshint ignore:start
   <query>
+    <button onClick={mutation(TOGGLE_VIEW)}></button>
     <form onSubmit={mutation(SEARCH)} action="javascript:">
       <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
@@ -43,15 +48,15 @@ const Query = (_, {enteredQuery, mutation}) => (
   // jshint ignore:end
 );
 
-const Engines = (_, {engines}) => (
+const Engines = (_, {engines, view}) => (
   // jshint ignore:start
   <engines>
-    {engines.map(engine => <Engine engine={engine} />)}
+    {view === 'iframe' ? engines.map(engine => <Engine engine={engine} />) : undefined}
   </engines>
   // jshint ignore:end
 );
 
-const Engine = ({enteredQuery, engine: {name, url}}, {mutation}) => (
+const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
   // jshint ignore:start
   <engine >
     <name>{name}</name>
