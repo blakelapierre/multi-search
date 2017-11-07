@@ -1,14 +1,29 @@
-import server from './server';
+import search from './search';
+
+const ws = require('ws');
+
+const port = 8181;
+
+const server = new ws.Server({port});
+
+server.on('connection', socket => {
+  socket.on('message', message => {
+    console.log(message);
+    
+  });
+});
+
+console.log('listening on', port)
 
 
-server('test', partialResults)
-  .then(use(({urls}) => {
-    const list = Object.keys(urls).map(url => [url, urls[url]]);
-    list.sort(([_, a], [__, b]) => b.length - a.length);
-    console.log(list);
-  }))
-  .then(use(printResults))
-  .catch(error => console.log('error', error));
+// search('test', partialResults)
+//   .then(use(({urls}) => {
+//     const list = Object.keys(urls).map(url => [url, urls[url]]);
+//     list.sort(([_, a], [__, b]) => b.length - a.length);
+//     console.log(list);
+//   }))
+//   .then(use(printResults))
+//   .catch(error => console.log('error', error));
 
 function partialResults({name, results}) {
   const resultsToPrint = 2;
