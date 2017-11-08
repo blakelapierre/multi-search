@@ -7,9 +7,10 @@ const port = 8181;
 const server = new ws.Server({port});
 
 server.on('connection', socket => {
-  socket.on('message', message => {
-    console.log(message);
-    
+  console.log('connected');
+  socket.on('message', query => {
+    search(query, ({name, results}) => socket.send(JSON.stringify({query, name, results})))
+      .catch(error => socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())])));
   });
 });
 
