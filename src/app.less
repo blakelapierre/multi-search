@@ -77,25 +77,101 @@ multi-select {
 
   results {
     display: flex;
-    flex-direction: column;
 
     justify-content: stretch;
 
     overflow-y: auto;
 
-    top urls {
-      display: flex;
+    top {
+      flex: 1 1 auto;
 
-      flex-direction: column;
-      flex-wrap: wrap;
+      max-width: 40vw;
 
-      max-height: 10rem;
+      urls {
+        div {
+          margin: 0.05em 0;
 
-      font-size: 0.8em;
+          word-break: break-all;
+        }
+
+        a {
+          margin-left: 0.5em;
+        }
+      }
     }
 
     sites {
       display: flex;
+
+      flex-direction: column;
+
+      flex: 1 1 auto;
+
+      max-width: 60vw;
+
+      result {
+        flex: 0 1 auto;
+
+        padding: 0.25em;
+
+        engine {
+          display: flex;
+
+          align-items: flex-end;
+
+          font-size: 0.75em;
+          line-height: 1em;
+
+          &>* {
+            padding: 0 0.5em;
+          }
+
+          .engine-icon {
+            width: 2em;
+          }
+
+          time {
+            font-size: 0.8em;
+
+            color: #070;
+          }
+        }
+
+        items {
+          item {
+            display: block;
+
+            margin: 0.2em 0;
+
+            a {
+              cursor: pointer;
+            }
+
+            snippet {
+              display: block;
+
+              margin: 0.1em;
+
+              transform: scale(0.8);
+              transform-origin: 0 0;
+
+              transition: transform 0.15s linear;
+            }
+          }
+        }
+      }
     }
   }
+}
+
+.engine-icon {
+  width: 0.9em;
+}
+
+engine-icons {
+  display: inline-block;
+
+  width: 3.6em;
+
+  text-align: right;
 }

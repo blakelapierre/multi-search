@@ -95,23 +95,30 @@ const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
 const Results = (_, {results}) => (
   // jshint ignore:start
   <results>
-    <Top />
     <sites>
       {results ? results.map(({name, results, start, end}) => (
         <result>
-          {name} (took {end - start} ms)
-          {results.map(({titles, snippet, url, images}) => (
-            <div>
-              <a href={url}>{titles[0]}</a>
-              <div>
-                {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
-                {snippet}
-              </div>
-            </div>
-          ))}
+          <engine>
+            <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
+            <name>{name}</name>
+            <time>took {end - start} ms</time>
+          </engine>
+          <items>
+            {results.slice(0, 3).map(({titles, snippet, url, images}) => (
+              <item>
+                <a href={url}>{titles[0]}</a>
+                <div>
+                  {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
+                  <snippet>{snippet}</snippet>
+                </div>
+              </item>
+            ))}
+            + {results.length - 3} more
+          </items>
         </result>
       )) : undefined}
     </sites>
+    <Top />
   </results>
   // jshint ignore:end
 );
@@ -119,8 +126,17 @@ const Results = (_, {results}) => (
 const Top = (_, {top, engines}) => (
   // jshint ignore:start
   <top>
-    {top ? (<urls>{top.map(([url, engines]) => (<div><a href={url}>{url}</a> ({engines.length})</div>))}</urls>) : undefined}
+    {top ? (<urls>{top.map(([url, engines]) => (<div><EngineIcons engines={engines} /><a href={url}>{url}</a></div>))}</urls>) : undefined}
   </top>
+  // jshint ignore:end
+);
+
+const EngineIcons = ({engines}) => (
+  // jshint ignore:start
+  <engine-icons>
+    {console.log(engines)}
+    {engines.map(([name]) => (<img src={`//${name}.com/favicon.ico`} class="engine-icon" />))}
+  </engine-icons>
   // jshint ignore:end
 );
 
