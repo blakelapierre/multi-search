@@ -9,7 +9,7 @@ const server = new ws.Server({port});
 server.on('connection', socket => {
   console.log('connected');
   socket.on('message', query => {
-    search(query, ({name, results}) => socket.send(JSON.stringify({query, name, results})))
+    search(query, ({name, results, start, end}) => socket.send(JSON.stringify({query, name, results, start, end})))
       .catch(error => socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())])));
   });
 });

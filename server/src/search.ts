@@ -23,15 +23,17 @@ function search(query, browser, partialResults) {
     
     // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
 
+    const start = new Date().getTime();
     await page.goto(`${queryUrl}${encodeURI(query)}`);
+    const end = new Date().getTime();
     
     const results = await page.evaluate(evaluator);
   
-    partialResults({name, results});
+    partialResults({name, results, start, end});
   
     await page.close();
 
-    return {name, results};
+    return {name, results, start, end};
   });
 }
 

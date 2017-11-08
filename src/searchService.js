@@ -3,9 +3,9 @@ const socket = new WebSocket(`ws://${window.location.hostname}:8181`);
 const waitingQueries = {};
 
 socket.addEventListener('message', ({data}) => {
-  const {query, name, results} = JSON.parse(data);
+  const {query, name, results, start, end} = JSON.parse(data);
 
-  waitingQueries[query]({query, name, results});
+  waitingQueries[query]({query, name, results, start, end});
 });
 
 export default search;

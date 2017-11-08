@@ -3,11 +3,12 @@ import { h, render } from 'preact-cycle';
 import searchService from './searchService';
 
 // jshint ignore:start
-const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, ...p}, mutation) => ({
+const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, top, ...p}, mutation) => ({
   query: enteredQuery,
   enteredQuery,
   results: [],
   urls: {},
+  top: undefined,
   searchQuery: enteredQuery,
   searchResponses: enteredQuery ? searchService(enteredQuery, mutation(ADD_RESPONSE)) : undefined,
   engines: engines.map(engine => {
@@ -18,10 +19,10 @@ const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, res
 });
 // jshint ignore:end
 
-const ADD_RESPONSE = (_, {query, name, results}) => {
+const ADD_RESPONSE = (_, {query, name, results, start, end}) => {
   console.log(_, query);
   if (_.searchQuery === query) {
-    _.results.push({name, results});
+    _.results.push({name, results, start, end});
 
     _.urls =  results.reduce((urls, {url}, i) => {
                 (urls[url] = urls[url] || []).push([name, i]);
@@ -96,9 +97,9 @@ const Results = (_, {results}) => (
   <results>
     <Top />
     <sites>
-      {results ? results.map(({name, results}) => (
+      {results ? results.map(({name, results, start, end}) => (
         <result>
-          {name}
+          {name} (took {end - start} ms)
           {results.map(({titles, snippet, url, images}) => (
             <div>
               <a href={url}>{titles[0]}</a>
