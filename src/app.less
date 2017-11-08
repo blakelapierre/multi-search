@@ -126,6 +126,10 @@ multi-select {
             padding: 0 0.5em;
           }
 
+          name {
+            min-width: 6em;
+          }
+
           .engine-icon {
             width: 2em;
           }
@@ -133,7 +137,22 @@ multi-select {
           time {
             font-size: 0.8em;
 
-            color: #070;
+            color: #010;
+
+            units {
+              font-size: 0.8em;
+
+              align-self: flex-end;
+            }
+
+            bar {
+              display: inline-block;
+
+              height: 0.3em;
+              // margin-left: 0.5em;
+
+              background-color: #009;
+            }
           }
         }
 

@@ -101,7 +101,7 @@ const Results = (_, {results}) => (
           <engine>
             <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
             <name>{name}</name>
-            <time>took {end - start} ms</time>
+            <time>{end - start}<units>ms</units> <bar style={{width: `${2 * (end - start) / 1000}em`}}></bar></time>
           </engine>
           <items>
             {results.slice(0, 3).map(({titles, snippet, url, images}) => (
