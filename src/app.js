@@ -1,13 +1,39 @@
 import { h, render } from 'preact-cycle';
 
-const SEARCH = ({enteredQuery, query, engines}) => ({
+import searchService from './searchService';
+
+// jshint ignore:start
+const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, ...p}, mutation) => ({
   query: enteredQuery,
   enteredQuery,
+  results: [],
+  urls: {},
+  searchQuery: enteredQuery,
+  searchResponses: enteredQuery ? searchService(enteredQuery, mutation(ADD_RESPONSE)) : undefined,
   engines: engines.map(engine => {
     if (enteredQuery) engine.url = engine.queryUrl + enteredQuery;
     return engine;
-  })
+  }),
+  ...p
 });
+// jshint ignore:end
+
+const ADD_RESPONSE = (_, {query, name, results}) => {
+  console.log(_, query);
+  if (_.searchQuery === query) {
+    _.results.push({name, results});
+
+    _.urls =  results.reduce((urls, {url}, i) => {
+                (urls[url] = urls[url] || []).push([name, i]);
+                return urls;
+              }, _.urls);
+
+    _.top = Object.keys(_.urls).map(url => [url, _.urls[url]]);
+    _.top.sort(([_, a], [__, b]) => b.length - a.length);
+
+    console.log('responses added', _.urls, _.search);
+  }
+};
 
 const TOGGLE_VIEW = (_) => {
   _.view = _.view === 'iframe' ? '' : 'iframe';
@@ -28,11 +54,11 @@ const QUERY_CHANGED = ({enteredQuery, ...p}, {target:{value}}) => ({
 //         });
 //       };
 
-const MultiSearch = ({engines}) => (
+const MultiSearch = ({engines, view}) => (
   // jshint ignore:start
   <multi-select>
     <Query />
-    <Engines />
+    {view === 'iframe' ? <Engines /> : <Results />}
   </multi-select>
   // jshint ignore:end
 );
@@ -41,17 +67,17 @@ const Query = (_, {enteredQuery, mutation}) => (
   // jshint ignore:start
   <query>
     <button onClick={mutation(TOGGLE_VIEW)}></button>
-    <form onSubmit={mutation(SEARCH)} action="javascript:">
+    <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
       <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
   </query>
   // jshint ignore:end
 );
 
-const Engines = (_, {engines, view}) => (
+const Engines = (_, {engines}) => (
   // jshint ignore:start
   <engines>
-    {view === 'iframe' ? engines.map(engine => <Engine engine={engine} />) : undefined}
+    {engines.map(engine => <Engine engine={engine} />)}
   </engines>
   // jshint ignore:end
 );
@@ -62,6 +88,38 @@ const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
     <name>{name}</name>
     {url ? <iframe src={url} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
   </engine>
+  // jshint ignore:end
+);
+
+const Results = (_, {results}) => (
+  // jshint ignore:start
+  <results>
+    <Top />
+    <sites>
+      {results ? results.map(({name, results}) => (
+        <result>
+          {name}
+          {results.map(({titles, snippet, url, images}) => (
+            <div>
+              <a href={url}>{titles[0]}</a>
+              <div>
+                {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
+                {snippet}
+              </div>
+            </div>
+          ))}
+        </result>
+      )) : undefined}
+    </sites>
+  </results>
+  // jshint ignore:end
+);
+
+const Top = (_, {top, engines}) => (
+  // jshint ignore:start
+  <top>
+    {top ? (<urls>{top.map(([url, engines]) => (<div><a href={url}>{url}</a> ({engines.length})</div>))}</urls>) : undefined}
+  </top>
   // jshint ignore:end
 );
 

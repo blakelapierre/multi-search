@@ -11,6 +11,8 @@ body {
 }
 
 multi-select {
+  max-width: 100%;
+
   flex: 1 1 auto;
 
   display: flex;
@@ -70,6 +72,30 @@ multi-select {
         transform: scale(0.825);
         transform-origin: 50% 50%;
       }
+    }
+  }
+
+  results {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: stretch;
+
+    overflow-y: auto;
+
+    top urls {
+      display: flex;
+
+      flex-direction: column;
+      flex-wrap: wrap;
+
+      max-height: 10rem;
+
+      font-size: 0.8em;
+    }
+
+    sites {
+      display: flex;
     }
   }
 }
