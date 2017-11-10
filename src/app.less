@@ -33,7 +33,7 @@ body {
   }
 }
 
-multi-select {
+multi-search {
   max-width: 100%;
 
   flex: 1 1 auto;
@@ -41,10 +41,46 @@ multi-select {
   display: flex;
   flex-direction: column;
 
+  &.searched {
+    query {
+      top: 0 !important;
+      font-size: 1em !important;
+    }
+  }
+
   query {
+    position: relative;
+
     flex: 0 0 auto;
 
     display: flex;
+
+    top: calc(50%-6em);
+
+    height: 1em;
+
+    line-height: 1em;
+
+    font-size: 6em;
+
+    transition: all 0.05s linear;
+
+    &.characters-1 { top: calc(50%-6em); font-size: 6em; }
+    &.characters-2 { top: calc(50%-5.5em); font-size: 5.5em; }
+    &.characters-3 { top: calc(50%-5em); font-size: 5em; }
+    &.characters-4 { top: calc(50%-4.5em); font-size: 4.5em; }
+    &.characters-5 { top: calc(50%-4em); font-size: 4em; }
+    &.characters-6 { top: calc(50%-3.5em); font-size: 3.5em; }
+    &.characters-7 { top: calc(50%-3em); font-size: 3em; }
+    &.characters-8 { top: calc(50%-2.75em); font-size: 2.75em; }
+    &.characters-9 { top: calc(50%-2.5em); font-size: 2.5em; }
+    &.characters-10 { top: calc(50%-2.25em); font-size: 2.25em; }
+    &.characters-11 { top: calc(50%-2em); font-size: 2em; }
+    &.characters-12 { top: calc(50%-1.75em); font-size: 1.75em; }
+    &.characters-13 { top: calc(50%-1.5em); font-size: 1.5em; }
+    &.characters-14 { top: calc(50%-1.25em); font-size: 1.25em; }
+    &.characters-15 { top: calc(50%-1.125em); font-size: 1.125em; }
+    &.characters-16 { top: calc(50%-1em); font-size: 1em; }
 
     button {
       display: inline-block;
@@ -58,17 +94,13 @@ multi-select {
       display: flex;
 
       input {
-        height: 1.25rem;
-
         flex: 1 0 auto;
 
         display: block;
 
         text-align: center;
 
-        font-size: 1.25em;
-
-        line-height: 1em;
+        font-size: 1em;
       }
     }
   }
@@ -120,13 +152,15 @@ multi-select {
 
       max-width: 40vw;
 
+      font-size: smaller;
+
       urls {
         display: block;
 
         url {
           display: flex;
 
-          margin: 0.05em 0;
+          margin: 0.1em 0;
 
           word-break: break-word;
 
@@ -137,6 +171,12 @@ multi-select {
 
         a {
           margin-left: 0.5em;
+
+          text-decoration: none;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
         }
       }
     }

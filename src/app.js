@@ -61,18 +61,18 @@ const SHOW_MORE = (_, result) => {
 //         });
 //       };
 
-const MultiSearch = ({engines, view}) => (
+const MultiSearch = ({engines, view}, {searchQuery}) => (
   // jshint ignore:start
-  <multi-select>
+  <multi-search className={{'searched': searchQuery}}>
     <Query />
     {view === 'iframe' ? <Engines /> : <Results />}
-  </multi-select>
+  </multi-search>
   // jshint ignore:end
 );
 
 const Query = (_, {enteredQuery, mutation}) => (
   // jshint ignore:start
-  <query>
+  <query className={`characters-${Math.min(16, enteredQuery.length)}`}>
     <button onClick={mutation(TOGGLE_VIEW)}></button>
     <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
       <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
@@ -135,7 +135,7 @@ const Results = (_, {results: engineResults, mutation}) => (
 const Top = (_, {top, engines}) => (
   // jshint ignore:start
   <top>
-    {top ? (<urls>{top.map(([url, engines]) => (<url><EngineIcons engines={engines} /><a href={url}>{url}</a></url>))}</urls>) : undefined}
+    {top ? (<urls>{top.map(([url, engines]) => (<url><EngineIcons engines={engines} /><a href={url} title={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a></url>))}</urls>) : undefined}
   </top>
   // jshint ignore:end
 );
