@@ -47,6 +47,12 @@ const QUERY_CHANGED = ({enteredQuery, ...p}, {target:{value}}) => ({
 });
 // jshint ignore:end
 
+// jshint ignore:start
+const SHOW_MORE = (_, result) => {
+  result.sliceEnd = result.results.length;
+};
+// jshint ignore:end
+
 // const QUERY_CHANGED = (_, {target:{value}}) => { _.enteredQuery = value; },
 //       SEARCH = (_) => { 
 //         _.query = _.enteredQuery;
@@ -92,11 +98,11 @@ const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
   // jshint ignore:end
 );
 
-const Results = (_, {results}) => (
+const Results = (_, {results: engineResults, mutation}) => (
   // jshint ignore:start
   <results>
     <sites>
-      {results ? results.map(({name, results, start, end}) => (
+      {engineResults ? engineResults.map(({name, results, start, end, sliceStart = 0, sliceEnd = 3}, i) => (
         <result>
           <engine>
             <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
@@ -104,7 +110,7 @@ const Results = (_, {results}) => (
             <time>{end - start}<units>ms</units> <bar style={{width: `${2 * (end - start) / 1000}em`}}></bar></time>
           </engine>
           <items>
-            {results.slice(0, 3).map(({titles, snippet, url, images}) => (
+            {results.slice(sliceStart, sliceEnd).map(({titles, snippet, url, images}) => (
               <item>
                 <a href={url}>{titles[0]}</a>
                 <div>
@@ -113,7 +119,8 @@ const Results = (_, {results}) => (
                 </div>
               </item>
             ))}
-            + {results.length - 3} more
+            {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
+                                           : undefined}
           </items>
         </result>
       )) : undefined}
