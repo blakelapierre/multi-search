@@ -11,9 +11,9 @@ socket.addEventListener('message', ({data}) => {
 export default search;
 
 function search(query, mutation) {
-  console.log('search', query, mutation);
+
   const results = {};
-console.log('m', mutation);
+
   if (query) {
     Object.keys(waitingQueries).forEach(key => delete waitingQueries[key]);
 
