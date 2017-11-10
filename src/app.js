@@ -54,7 +54,7 @@ const SHOW_MORE = (_, result) => {
 // jshint ignore:end
 
 // const QUERY_CHANGED = (_, {target:{value}}) => { _.enteredQuery = value; },
-//       SEARCH = (_) => { 
+//       SEARCH = (_) => {
 //         _.query = _.enteredQuery;
 //         _.engines.forEach(engine => {
 //           if (_.query) engine.url = engine.queryUrl + _.query;
@@ -119,8 +119,10 @@ const Results = (_, {results: engineResults, mutation}) => (
                 </div>
               </item>
             ))}
-            {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
-                                           : undefined}
+            <more>
+              {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
+                                             : undefined}
+            </more>
           </items>
         </result>
       )) : undefined}
@@ -133,7 +135,7 @@ const Results = (_, {results: engineResults, mutation}) => (
 const Top = (_, {top, engines}) => (
   // jshint ignore:start
   <top>
-    {top ? (<urls>{top.map(([url, engines]) => (<div><EngineIcons engines={engines} /><a href={url}>{url}</a></div>))}</urls>) : undefined}
+    {top ? (<urls>{top.map(([url, engines]) => (<url><EngineIcons engines={engines} /><a href={url}>{url}</a></url>))}</urls>) : undefined}
   </top>
   // jshint ignore:end
 );
