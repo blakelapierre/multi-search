@@ -30,7 +30,11 @@ const ADD_RESPONSE = (_, {query, name, results, start, end}) => {
               }, _.urls);
 
     _.top = Object.keys(_.urls).map(url => [url, _.urls[url]]);
-    _.top.sort(([_, a], [__, b]) => b.length - a.length);
+    _.top.sort(([_, a], [__, b]) => {
+      const d = b.length - a.length;
+      if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
+      else return d;
+    });
 
     console.log('responses added', _.urls, _.search);
   }
