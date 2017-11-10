@@ -32,13 +32,13 @@ const p = name => print(file => console.log(name, file));
 
 gulp.task('default', ['build']);
 
-gulp.task('build', sequence('clean', 'runtime'));
-gulp.task('package', ['uglify'], () => console.log(`App written to ${paths.package}/app.js !`));
+gulp.task('build', sequence('clean', 'transpile'));
+gulp.task('package', /*['uglify'],*/ () => console.log(`App written to ${paths.package}/app.js !`));
 
 gulp.task('run', () => run(`node ${paths.dist}/index.js ${args.args || ''}`).exec());
 gulp.task('test', () => run(`node ${paths.dist}/tests/index.js ${args.args || ''}`).exec());
 
-gulp.task('watch', ['runtime'], () => gulp.watch(paths.script, ['runtime']));
+gulp.task('watch', ['transpile'], () => gulp.watch(paths.script, ['transpile']));
 gulp.task('dev', ['start_dev'], () => gulp.watch(paths.scripts, ['start_dev']));
 
 gulp.task('transpile', ['jshint'],
