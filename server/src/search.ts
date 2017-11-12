@@ -4,48 +4,6 @@ import engines from './engines';
 
 const document: any = {};
 
-// const browserPromise = puppeteer.launch();
-
-// export default class SearchService {
-//   pagePoolSize = 5
-
-//   async search (query = 'test', partialResults) {
-//     const browser = await browserPromise,
-//           start = new Date().getTime(),
-//           results = await Promise.all(search(query, browser, partialResults)),
-//           end = new Date().getTime(),
-//           urls = results.reduce((urls, {name, results}, i) => {
-//             return results.reduce((urls, {url}, i) => {
-//               (urls[url] = urls[url] || []).push([name, i]);
-//               return urls;
-//             }, urls);
-//           }, {});
-
-//     return {urls, results, start, end};
-//   }
-
-//   searchEngines (query, browser, partialResults) {
-//     return engines.map(async ({name, queryUrl, evaluator}) => {
-//       const page = await browser.newPage();
-
-//       // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
-
-//       const start = new Date().getTime();
-//       await page.goto(`${queryUrl}${encodeURI(query)}`);
-//       const end = new Date().getTime();
-
-//       const results = await page.evaluate(evaluator);
-
-//       partialResults({name, results, start, end});
-
-//       await page.close();
-
-//       return {name, results, start, end};
-//     });
-//   }
-// }
-
-
 class PagePool {
   size = engines.length * 2
 
@@ -66,16 +24,12 @@ class PagePool {
 
     let page = this.freePages.pop();
 
-    console.log(page);
-
     if (page === undefined) {
-      console.log(this.totalPages, this.size);
       if (this.totalPages < this.size) {
         this.totalPages++;
         page = await browser.newPage();
       }
       else {
-        console.log('waiting');
         page = await this.waitForPage();
       }
     }
@@ -100,7 +54,6 @@ class PagePool {
     })
   }
 }
-
 
 const pagePool = new PagePool();
 
@@ -136,28 +89,6 @@ function search(query, pagePool, partialResults) {
     return {name, results, start, end};
   });
 }
-
-
-
-// function search(query, browser, partialResults) {
-//   return engines.map(async ({name, queryUrl, evaluator}) => {
-//     const page = await browser.newPage();
-
-//     // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
-
-//     const start = new Date().getTime();
-//     await page.goto(`${queryUrl}${encodeURI(query)}`);
-//     const end = new Date().getTime();
-
-//     const results = await page.evaluate(evaluator);
-
-//     partialResults({name, results, start, end});
-
-//     await page.close();
-
-//     return {name, results, start, end};
-//   });
-// }
 
 const groupBy = (list, selector, transform = a => a, groups = {}) => list.reduce((groups, item) => {
   const value = selector(item);
