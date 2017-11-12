@@ -148,7 +148,7 @@ const EngineIcons = ({engines}) => (
   // jshint ignore:start
   <engine-icons>
     {console.log(engines)}
-    {engines.map(([name]) => (<img src={`//${name}.com/favicon.ico`} class="engine-icon" />))}
+    {engines.map(([name, position]) => (<img src={`//${name}.com/favicon.ico`} class="engine-icon" title={`${name} Rank: ${position + 1}`} />))}
   </engine-icons>
   // jshint ignore:end
 );
