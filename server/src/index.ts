@@ -1,10 +1,14 @@
+import webServer from './webServer';
+
 import search from './search';
 
 const ws = require('ws');
 
-const port = 8181;
+const port = process.argv[2] || 8181,
+      webPort = process.argv[3] || 8182;
 
 const server = new ws.Server({port});
+webServer('../.dev', webPort);
 
 server.on('connection', socket => {
   console.log('connected');
@@ -14,7 +18,9 @@ server.on('connection', socket => {
   });
 });
 
-console.log('listening on', port)
+console.log('ws listening on', port);
+console.log('http listening on', webPort);
+
 
 
 // search('test', partialResults)

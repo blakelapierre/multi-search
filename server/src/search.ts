@@ -15,8 +15,8 @@ class PagePool {
 
   browserPromise
 
-  constructor() {
-    this.browserPromise = puppeteer.launch();
+  constructor(browserPromise) {
+    this.browserPromise = browserPromise;
   }
 
   async getPage() {
@@ -49,13 +49,11 @@ class PagePool {
   }
 
   waitForPage() {
-    return new Promise((resolve, reject) => {
-      this.reservations.push(resolve);
-    })
+    return new Promise((resolve, reject) => this.reservations.push(resolve));
   }
 }
 
-const pagePool = new PagePool();
+const pagePool = new PagePool(puppeteer.launch());
 
 export default async (query = 'test', partialResults) => {
   const start = new Date().getTime(),
