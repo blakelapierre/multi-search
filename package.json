@@ -1,8 +1,9 @@
 {
   "name": "multi-search-www",
-  "description": "",
+  "description": "Search multiple web search engines simultaneously from a simple interface.",
   "repository": "https://github.com/blakelapierre/multi-search-www",
   "version": "0.0.1",
+  "main": ".dev/index.js",
   "dependencies": {
     "preact-cycle": "^0.5.1"
   },
