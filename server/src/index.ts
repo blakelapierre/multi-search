@@ -8,7 +8,9 @@ const port = process.argv[2] || 8181,
       webPort = process.argv[3] || 8182;
 
 const server = new ws.Server({port});
-webServer('../.dev', webPort);
+console.log(process.env['DEV']);
+if (process.env['DEV']) webServer('../.dev', webPort);
+else webServer('../.dist', webPort);
 
 server.on('connection', socket => {
   console.log('connected');
