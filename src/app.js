@@ -77,10 +77,10 @@ const MultiSearch = ({engines, view}, {searchQuery}) => (
   // jshint ignore:end
 );
 
-const Query = (_, {enteredQuery, mutation}) => (
+const Query = (_, {enteredQuery, searchQuery, mutation}) => (
   // jshint ignore:start
   <query className={`characters-${Math.min(16, enteredQuery.length)}`}>
-    <button onClick={mutation(TOGGLE_VIEW)}></button>
+    {searchQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
     <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
       <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
