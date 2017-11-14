@@ -20,7 +20,6 @@ const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, res
 // jshint ignore:end
 
 const ADD_RESPONSE = (_, {query, name, results, start, end}) => {
-  console.log(_, query);
   if (_.searchQuery === query) {
     _.results.push({name, results, start, end});
 
@@ -35,8 +34,6 @@ const ADD_RESPONSE = (_, {query, name, results, start, end}) => {
       if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
       else return d;
     });
-
-    console.log('responses added', _.urls, _.search);
   }
 };
 
