@@ -164,18 +164,18 @@ multi-search {
 
           word-break: break-word;
 
+          &.highlight {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+
           engine-icons {
             flex: 0 0 auto;
           }
-        }
 
-        a {
-          margin-left: 0.5em;
+          a {
+            margin-left: 0.5em;
 
-          text-decoration: none;
-
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: none;
           }
         }
       }
@@ -244,6 +244,10 @@ multi-search {
             display: block;
 
             margin: 0.1em;
+
+            &.highlight {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
 
             a {
               cursor: pointer;

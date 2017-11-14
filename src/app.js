@@ -57,6 +57,12 @@ const SHOW_MORE = (_, result) => {
 };
 // jshint ignore:end
 
+// jshint ignore:start
+const SET_HIGHLIGHT_URL = (_, url) => {
+  _.highlightUrl = url;
+};
+// jshint ignore:end
+
 // const QUERY_CHANGED = (_, {target:{value}}) => { _.enteredQuery = value; },
 //       SEARCH = (_) => {
 //         _.query = _.enteredQuery;
@@ -102,7 +108,7 @@ const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
   // jshint ignore:end
 );
 
-const Results = (_, {results: engineResults, mutation}) => (
+const Results = (_, {results: engineResults, highlightUrl, mutation}) => (
   // jshint ignore:start
   <results>
     <sites>
@@ -115,7 +121,7 @@ const Results = (_, {results: engineResults, mutation}) => (
           </engine>
           <items>
             {results.slice(sliceStart, sliceEnd).map(({titles, snippet, url, images}) => (
-              <item>
+              <item onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}>
                 <a href={url}>{titles[0]}</a>
                 <div>
                   {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
@@ -136,10 +142,10 @@ const Results = (_, {results: engineResults, mutation}) => (
   // jshint ignore:end
 );
 
-const Top = (_, {top, engines}) => (
+const Top = (_, {top, highlightUrl, engines, mutation}) => (
   // jshint ignore:start
   <top>
-    {top ? (<urls>{top.map(([url, engines]) => (<url><EngineIcons engines={engines} /><a href={url} title={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a></url>))}</urls>) : undefined}
+    {top ? (<urls>{top.map(([url, engines]) => (<url onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}><EngineIcons engines={engines} /><a href={url} title={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a></url>))}</urls>) : undefined}
   </top>
   // jshint ignore:end
 );
@@ -147,7 +153,6 @@ const Top = (_, {top, engines}) => (
 const EngineIcons = ({engines}) => (
   // jshint ignore:start
   <engine-icons>
-    {console.log(engines)}
     {engines.map(([name, position]) => (<img src={`//${name}.com/favicon.ico`} class="engine-icon" title={`${name} Rank: ${position + 1}`} />))}
   </engine-icons>
   // jshint ignore:end
