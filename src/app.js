@@ -68,9 +68,10 @@ const SET_HIGHLIGHT_URL = (_, url) => {
 //         });
 //       };
 
-const MultiSearch = ({engines, view}, {searchQuery}) => (
+const MultiSearch = ({engines, view, enteredQuery}, {searchQuery, mutation}) => (
   // jshint ignore:start
   <multi-search className={{'searched': searchQuery}}>
+    {enteredQuery !== searchQuery ? mutation(SEARCH, mutation)(enteredQuery) : undefined}
     <Query />
     {view === 'iframe' ? <Engines /> : <Results />}
   </multi-search>
@@ -157,8 +158,8 @@ const EngineIcons = ({engines}) => (
 
 render(
   // jshint ignore:start
-  MultiSearch, SEARCH({
-    enteredQuery: window.location.search.substr(1).split('=')[1] || '',
+  MultiSearch, {
+    enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1]) || '',
     engines: [{
       'name': 'Google',
       'queryUrl': 'https://google.com/search?q='
@@ -172,6 +173,6 @@ render(
       'name': 'Yahoo',
       'queryUrl': 'https://search.yahoo.com/search?p='
     }],
-  }), document.body
+  }, document.body
   // jshint ignore:end
 );
