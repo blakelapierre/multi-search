@@ -110,33 +110,41 @@ const Results = (_, {results: engineResults, highlightUrl, mutation}) => (
   // jshint ignore:start
   <results>
     <sites>
-      {engineResults ? engineResults.map(({name, results, start, end, sliceStart = 0, sliceEnd = 3}, i) => (
-        <result>
-          <engine>
-            <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
-            <name>{name}</name>
-            <time>{end - start}<units>ms</units> <bar style={{width: `${2 * (end - start) / 1000}em`}}></bar></time>
-          </engine>
-          <items>
-            {results.slice(sliceStart, sliceEnd).map(({titles, snippet, url, images}) => (
-              <item onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}>
-                <a href={url}>{titles[0]}</a>
-                <div>
-                  {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
-                  <snippet>{snippet}</snippet>
-                </div>
-              </item>
-            ))}
-            <more>
-              {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
-                                             : undefined}
-            </more>
-          </items>
-        </result>
-      )) : undefined}
+      {engineResults ? engineResults.map((results, i) => <EngineResults {...results} i={i} />) : undefined}
     </sites>
     <Top />
   </results>
+  // jshint ignore:end
+);
+
+// jshint ignore:start
+const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i}, {results: engineResults, mutation}) => (
+  <result>
+    <engine>
+      <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
+      <name>{name}</name>
+      <time>{end - start}<units>ms</units> <bar style={{width: `${2 * (end - start) / 1000}em`}}></bar></time>
+    </engine>
+    <items>
+      {results.slice(sliceStart, sliceEnd).map(result => <Result {...result} />)}
+      <more>
+        {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
+                                       : undefined}
+      </more>
+    </items>
+  </result>
+);
+// jshint ignore:end
+
+const Result = ({titles, snippet, url, images}, {highlightUrl, mutation}) => (
+  // jshint ignore:start
+  <item onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}>
+    <a href={url}>{titles[0]}</a>
+    <div>
+      {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
+      <snippet>{snippet}</snippet>
+    </div>
+  </item>
   // jshint ignore:end
 );
 
@@ -159,7 +167,7 @@ const EngineIcons = ({engines}) => (
 render(
   // jshint ignore:start
   MultiSearch, {
-    enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1]) || '',
+    enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' '),
     engines: [{
       'name': 'Google',
       'queryUrl': 'https://google.com/search?q='
