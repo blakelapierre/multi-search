@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-export default (directory, port) {
+export default (directory, port) => {
   http.createServer(function (req, res) {
     console.log(`${req.method} ${req.url}`);
 
