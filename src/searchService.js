@@ -35,8 +35,13 @@ const serverConnection = new ServerConnection(({data}) => {
 export default search;
 
 function search(query, mutation) {
-
-  const results = {};
+  const result = {
+    query,
+    time: new Date().getTime(),
+    responses: [],
+    urls: {},
+    top: []
+  };
 
   if (query) {
     Object.keys(waitingQueries).forEach(key => delete waitingQueries[key]);
@@ -44,10 +49,22 @@ function search(query, mutation) {
     serverConnection.send(query);
 
     waitingQueries[query] = response => {
-      results[response.name] = response;
-      mutation(response);
+      result.urls = response.results.reduce((urls, {url}, i) => {
+                  (urls[url] = urls[url] || []).push([response.name, i]);
+                  return urls;
+                }, result.urls);
+
+      result.top = Object.keys(result.urls).map(url => [url, result.urls[url]]);
+      result.top.sort(([_, a], [__, b]) => {
+        const d = b.length - a.length;
+        if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
+        else return d;
+      });
+
+      result.responses.push(response);
+      mutation(result, response);
     };
   }
 
-  return results;
+  return result;
 }

@@ -3,49 +3,63 @@ import { h, render } from 'preact-cycle';
 import searchService from './searchService';
 
 // jshint ignore:start
-const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, top, ...p}, mutation) => ({
-  query: enteredQuery,
-  enteredQuery,
-  results: [],
-  urls: {},
-  top: undefined,
-  searchQuery: enteredQuery,
-  searchResponses: enteredQuery ? searchService(enteredQuery, mutation(ADD_RESPONSE)) : undefined,
-  engines: engines.map(engine => {
-    if (enteredQuery) engine.url = engine.queryUrl + enteredQuery;
-    return engine;
-  }),
+const SEARCH = ({ui: {buildingQuery}, searches, ...p}, mutation) => ({
+  ui: {query: buildingQuery, buildingQuery},
+  searches: [searchService(buildingQuery, mutation(ADD_RESPONSE))].concat(searches),
+  // searches: [{
+  //   query,
+  //   time: new Date().getTime(),
+  //   responses: searchService(query, mutation(ADD_RESPONSE))
+  // }].concat(searches),
   ...p
 });
+
+// const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, top, ...p}, mutation) => ({
+//   query: enteredQuery,
+//   enteredQuery,
+//   results: [],
+//   urls: {},
+//   top: undefined,
+//   searchQuery: enteredQuery,
+//   searchResponses: enteredQuery ? searchService(enteredQuery, mutation(ADD_RESPONSE)) : undefined,
+//   engines: engines.map(engine => {
+//     if (enteredQuery) engine.url = engine.queryUrl + enteredQuery;
+//     return engine;
+//   }),
+//   ...p
+// });
 // jshint ignore:end
 
-const ADD_RESPONSE = (_, {query, name, results, start, end}) => {
-  if (_.searchQuery === query) {
-    _.results.push({name, results, start, end});
+const ADD_RESPONSE = (_, result) => {
 
-    _.urls =  results.reduce((urls, {url}, i) => {
-                (urls[url] = urls[url] || []).push([name, i]);
-                return urls;
-              }, _.urls);
-
-    _.top = Object.keys(_.urls).map(url => [url, _.urls[url]]);
-    _.top.sort(([_, a], [__, b]) => {
-      const d = b.length - a.length;
-      if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
-      else return d;
-    });
-  }
 };
+
+// const ADD_RESPONSE = (_, {query, , {query, name, results, start, end}) => {
+//   if (_.searchQuery === query) {
+//     _.results.push({name, results, start, end});
+
+//     _.urls =  results.reduce((urls, {url}, i) => {
+//                 (urls[url] = urls[url] || []).push([name, i]);
+//                 return urls;
+//               }, _.urls);
+
+//     _.top = Object.keys(_.urls).map(url => [url, _.urls[url]]);
+//     _.top.sort(([_, a], [__, b]) => {
+//       const d = b.length - a.length;
+//       if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
+//       else return d;
+//     });
+//   }
+// };
 
 const TOGGLE_VIEW = (_) => {
   _.view = _.view === 'iframe' ? '' : 'iframe';
 };
 
 // jshint ignore:start
-const QUERY_CHANGED = ({enteredQuery, ...p}, {target:{value}}) => ({
-  enteredQuery: value,
-  ...p
-});
+const QUERY_CHANGED = ({ui}, {target:{value}}) => {
+  ui.buildingQuery = value;
+};
 // jshint ignore:end
 
 // jshint ignore:start
@@ -68,26 +82,28 @@ const SET_HIGHLIGHT_URL = (_, url) => {
 //         });
 //       };
 
-const MultiSearch = ({engines, view, enteredQuery}, {searchQuery, mutation}) => (
+const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation}) => (
   // jshint ignore:start
-  <multi-search className={{'searched': searchQuery}}>
-    {enteredQuery !== searchQuery ? mutation(SEARCH, mutation)(enteredQuery) : undefined}
+  <multi-search className={{'searched': query}}>
+  {console.log(query, search)}
+    {query && !search ? mutation(SEARCH, mutation)(query) : undefined}
     <Query />
     {view === 'iframe' ? <Engines /> : <Results />}
   </multi-search>
   // jshint ignore:end
 );
 
-const Query = (_, {enteredQuery, searchQuery, mutation}) => (
+
   // jshint ignore:start
-  <query className={`characters-${Math.min(16, enteredQuery.length)}`}>
-    {searchQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
+const Query = (_, {ui: {buildingQuery = ''}, mutation}) => (
+  <query className={`characters-${Math.min(16, buildingQuery.length)}`}>
+    {buildingQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
     <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
-      <input placeholder="Enter Query Text" value={enteredQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
+      <input placeholder="Enter Query Text" value={buildingQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
   </query>
-  // jshint ignore:end
 );
+  // jshint ignore:end
 
 const Engines = (_, {engines}) => (
   // jshint ignore:start
@@ -97,7 +113,7 @@ const Engines = (_, {engines}) => (
   // jshint ignore:end
 );
 
-const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
+const Engine = ({engine: {name, url}}, {view, mutation}) => (
   // jshint ignore:start
   <engine >
     <name>{name}</name>
@@ -106,19 +122,19 @@ const Engine = ({enteredQuery, engine: {name, url}}, {view, mutation}) => (
   // jshint ignore:end
 );
 
-const Results = (_, {results: engineResults, highlightUrl, mutation}) => (
+const Results = (_, {searches: [search], highlightUrl, mutation}) => search ? (
   // jshint ignore:start
   <results>
     <sites>
-      {engineResults ? engineResults.map((results, i) => <EngineResults {...results} i={i} />) : undefined}
+      {search.responses.map((response, i) => <EngineResults {...response} i={i} search={search} />)}
     </sites>
     <Top />
   </results>
   // jshint ignore:end
-);
+) : undefined;
 
 // jshint ignore:start
-const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i}, {results: engineResults, mutation}) => (
+const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i, search: {responses}}, {mutation}) => (
   <result>
     <engine>
       <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
@@ -128,7 +144,7 @@ const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3,
     <items>
       {results.slice(sliceStart, sliceEnd).map(result => <Result {...result} />)}
       <more>
-        {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, engineResults[i])}>+ {results.length - sliceEnd} more</div>
+        {results.length - sliceEnd > 0 ? <div onClick={mutation(SHOW_MORE, responses[i])}>+ {results.length - sliceEnd} more</div>
                                        : undefined}
       </more>
     </items>
@@ -148,7 +164,7 @@ const Result = ({titles, snippet, url, images}, {highlightUrl, mutation}) => (
   // jshint ignore:end
 );
 
-const Top = (_, {top, highlightUrl, engines, mutation}) => (
+const Top = (_, {searches: [{top}], highlightUrl, engines, mutation}) => (
   // jshint ignore:start
   <top>
     {top ? (<urls>{top.map(([url, engines]) => (<url onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}><EngineIcons engines={engines} /><a href={url} title={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a></url>))}</urls>) : undefined}
@@ -164,10 +180,12 @@ const EngineIcons = ({engines}) => (
   // jshint ignore:end
 );
 
+const query = decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' ');
+
 render(
   // jshint ignore:start
   MultiSearch, {
-    enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' '),
+    // enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' '),
     engines: [{
       'name': 'Google',
       'queryUrl': 'https://google.com/search?q='
@@ -181,6 +199,12 @@ render(
       'name': 'Yahoo',
       'queryUrl': 'https://search.yahoo.com/search?p='
     }],
+
+    ui: {
+      buildingQuery: query,
+      query
+    },
+    searches: []
   }, document.body
   // jshint ignore:end
 );
