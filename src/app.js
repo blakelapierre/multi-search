@@ -113,7 +113,7 @@ const Engines = (_, {engines}) => (
   // jshint ignore:end
 );
 
-const Engine = ({engine: {name, queryUrl}, query}, {view, mutation}) => (
+const Engine = ({engine: {name, queryUrl}}, {ui: {query}, view, mutation}) => (
   // jshint ignore:start
   <engine >
     <name>{name}</name>
