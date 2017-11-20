@@ -86,6 +86,10 @@ multi-search {
       display: inline-block;
 
       width: 1.25em;
+
+      background-color: transparent;
+
+      border-width: 1px;
     }
 
     form {
@@ -113,6 +117,8 @@ multi-search {
     flex-wrap: wrap;
 
     engine {
+      position: relative;
+
       flex: 1 1 auto;
 
       min-width: 50%;
@@ -123,17 +129,103 @@ multi-search {
       justify-content: center;
       align-items: center;
 
-      overflow: hidden;
+      overflow: visible;
 
-      iframe {
-        position: absolute;
+      &:hover {
+        z-index: 1;
+
+        iframe-container {
+          iframe {
+            border: solid 1px #999;
+            transform: scale(1.25);
+          }
+        }
+
+        &.index-0 {
+          iframe-container {
+            iframe {
+              top: 0;
+              left: 0;
+
+              transform-origin: 0 0;
+            }
+          }
+        }
+
+        &.index-1 {
+          iframe-container {
+            iframe {
+              top: 0;
+              right: 0;
+
+              left: initial;
+
+              transform-origin: 100% 0;
+            }
+          }
+        }
+
+        &.index-2 {
+          iframe-container {
+            iframe {
+              bottom: 0;
+              left: 0;
+
+              transform-origin: 0 100%;
+            }
+          }
+        }
+
+        &.index-3 {
+          iframe-container {
+            iframe {
+              bottom: 0;
+              right: 0;
+
+              top: initial;
+              left: initial;
+
+              transform-origin: 100% 100%;
+            }
+          }
+        }
+      }
+
+      iframe-container {
+        // display: block;
+
+        display: flex;
+
+        width: 100%;
+
+        justify-content: center;
+        align-items: center;
+
+        // height: 100%;
+        // width: 60%;
+        // height: 60%;
+
         flex: 1 1 auto;
 
-        width: 60%;
-        height: 60%;
+        iframe {
+          // display: flex;
 
-        transform: scale(0.825);
-        transform-origin: 50% 50%;
+          position: absolute;
+          flex: 1 1 auto;
+
+          // top: 0;
+          // left: 0;
+            // bottom: 0;
+          // right: 0;
+
+          width: calc(100% / 0.75);
+          height: calc(100% / 0.75);
+
+          transform: scaleX(0.75) scaleY(0.735);
+          transform-origin: 50% 50%;
+
+          transition: all 0.25s linear;
+        }
       }
     }
   }

@@ -108,16 +108,16 @@ const Query = (_, {ui: {buildingQuery = ''}, mutation}) => (
 const Engines = (_, {engines}) => (
   // jshint ignore:start
   <engines>
-    {engines.map(engine => <Engine engine={engine} />)}
+    {engines.map((engine, index) => <Engine engine={engine} index={index} />)}
   </engines>
   // jshint ignore:end
 );
 
-const Engine = ({engine: {name, queryUrl}}, {ui: {query}, view, mutation}) => (
+const Engine = ({engine: {name, queryUrl}, index}, {ui: {query}, view, mutation}) => (
   // jshint ignore:start
-  <engine >
+  <engine className={`index-${index}}>
     <name>{name}</name>
-    {queryUrl ? <iframe src={queryUrl + query} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
+    {queryUrl ? <iframe-container><iframe src={queryUrl + query} frameBorder={0} sandbox="allow-same-origin allow-scripts" /></iframe-container> : undefined}
   </engine>
   // jshint ignore:end
 );
