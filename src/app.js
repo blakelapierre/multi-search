@@ -113,11 +113,11 @@ const Engines = (_, {engines}) => (
   // jshint ignore:end
 );
 
-const Engine = ({engine: {name, url}}, {view, mutation}) => (
+const Engine = ({engine: {name, queryUrl}, query}, {view, mutation}) => (
   // jshint ignore:start
   <engine >
     <name>{name}</name>
-    {url ? <iframe src={url} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
+    {queryUrl ? <iframe src={queryUrl + query} frameBorder={0} sandbox="allow-same-origin allow-scripts" /> : undefined}
   </engine>
   // jshint ignore:end
 );
