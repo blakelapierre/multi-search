@@ -224,7 +224,7 @@ multi-search {
           transform: scaleX(0.75) scaleY(0.735);
           transform-origin: 50% 50%;
 
-          transition: all 0.25s linear;
+          transition: transform 0.25s linear;
         }
       }
     }
@@ -343,6 +343,12 @@ multi-search {
 
             a {
               cursor: pointer;
+
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+              }
             }
 
             snippet {

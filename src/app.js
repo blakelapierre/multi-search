@@ -88,6 +88,7 @@ const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation
   {console.log(query, search)}
     {query && !search ? mutation(SEARCH, mutation)(query) : undefined}
     <Query />
+    <History />
     {view === 'iframe' ? <Engines /> : <Results />}
   </multi-search>
   // jshint ignore:end
@@ -105,6 +106,13 @@ const Query = (_, {ui: {buildingQuery = ''}, mutation}) => (
 );
   // jshint ignore:end
 
+// jshint ignore:start
+const History = () => (
+  <history>
+  </history>
+);
+// jshint ignore:end
+
 const Engines = (_, {engines}) => (
   // jshint ignore:start
   <engines>
@@ -115,7 +123,7 @@ const Engines = (_, {engines}) => (
 
 const Engine = ({engine: {name, queryUrl}, index}, {ui: {query}, view, mutation}) => (
   // jshint ignore:start
-  <engine className={`index-${index}}>
+  <engine className={`index-${index}`}>
     <name>{name}</name>
     {queryUrl ? <iframe-container><iframe src={queryUrl + query} frameBorder={0} sandbox="allow-same-origin allow-scripts" /></iframe-container> : undefined}
   </engine>
