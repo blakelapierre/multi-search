@@ -6,51 +6,12 @@ import searchService from './searchService';
 const SEARCH = ({ui: {buildingQuery}, searches, ...p}, mutation) => ({
   ui: {query: buildingQuery, buildingQuery},
   searches: [searchService(buildingQuery, mutation(ADD_RESPONSE))].concat(searches),
-  // searches: [{
-  //   query,
-  //   time: new Date().getTime(),
-  //   responses: searchService(query, mutation(ADD_RESPONSE))
-  // }].concat(searches),
   ...p
 });
 
-// const SEARCH = ({enteredQuery, query, searchQuery, searchResponses, engines, results, urls, top, ...p}, mutation) => ({
-//   query: enteredQuery,
-//   enteredQuery,
-//   results: [],
-//   urls: {},
-//   top: undefined,
-//   searchQuery: enteredQuery,
-//   searchResponses: enteredQuery ? searchService(enteredQuery, mutation(ADD_RESPONSE)) : undefined,
-//   engines: engines.map(engine => {
-//     if (enteredQuery) engine.url = engine.queryUrl + enteredQuery;
-//     return engine;
-//   }),
-//   ...p
-// });
-// jshint ignore:end
-
 const ADD_RESPONSE = (_, result) => {
-
+  // mostly a placeholder to trigger a UI update right now...
 };
-
-// const ADD_RESPONSE = (_, {query, , {query, name, results, start, end}) => {
-//   if (_.searchQuery === query) {
-//     _.results.push({name, results, start, end});
-
-//     _.urls =  results.reduce((urls, {url}, i) => {
-//                 (urls[url] = urls[url] || []).push([name, i]);
-//                 return urls;
-//               }, _.urls);
-
-//     _.top = Object.keys(_.urls).map(url => [url, _.urls[url]]);
-//     _.top.sort(([_, a], [__, b]) => {
-//       const d = b.length - a.length;
-//       if (d === 0) return a.reduce((sum, [_, i]) => sum + i, 0) - b.reduce((sum, [_, i]) => sum + i, 0);
-//       else return d;
-//     });
-//   }
-// };
 
 const TOGGLE_VIEW = (_) => {
   _.view = _.view === 'iframe' ? '' : 'iframe';
@@ -74,14 +35,6 @@ const SET_HIGHLIGHT_URL = (_, url) => {
 };
 // jshint ignore:end
 
-// const QUERY_CHANGED = (_, {target:{value}}) => { _.enteredQuery = value; },
-//       SEARCH = (_) => {
-//         _.query = _.enteredQuery;
-//         _.engines.forEach(engine => {
-//           if (_.query) engine.url = engine.queryUrl + _.query;
-//         });
-//       };
-
 const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation}) => (
   // jshint ignore:start
   <multi-search className={{'searched': query}}>
@@ -98,9 +51,11 @@ const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation
   // jshint ignore:start
 const Query = (_, {ui: {buildingQuery = ''}, mutation}) => (
   <query className={`characters-${Math.min(16, buildingQuery.length)}`}>
-    {buildingQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
+    <options>
+      {buildingQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
+    </options>
     <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
-      <input placeholder="Enter Query Text" value={buildingQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
+      <input placeholder="Enter Query Text" value={buildingQuery} onInput={mutation(QUERY_CHANGED)} tabindex="0" autoFocus />
     </form>
   </query>
 );
