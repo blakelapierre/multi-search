@@ -36,6 +36,7 @@ class PagePool {
 
     return {
       page,
+      // release() { return (next = this.reservations.pop()) ? this.freePages.push(page) : next(page); }
       release: (page => {
         const next = this.reservations.pop();
 
@@ -73,10 +74,7 @@ function search(query, pagePool, partialResults) {
   return engines.map(async ({name, queryUrl, evaluator}) => {
     const {page, release} = await pagePool.getPage();
 
-    // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
-    const start = new Date().getTime();
-    await page.goto(`${queryUrl}${encodeURI(query)}`);
-    const end = new Date().getTime();
+    const [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`));
 
     const results = await page.evaluate(evaluator);
 
@@ -87,6 +85,8 @@ function search(query, pagePool, partialResults) {
     return {name, results, start, end};
   });
 }
+
+const asyncBenchmark = async fn => [new Date().getTime(), await fn(), new Date().getTime()];
 
 const groupBy = (list, selector, transform = a => a, groups = {}) => list.reduce((groups, item) => {
   const value = selector(item);

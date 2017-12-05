@@ -13,7 +13,7 @@ function googleEvaluator() {
   const results = document.querySelectorAll('.srg > .g');
 
   return Array.prototype.reduce.call(results, (agg, result, i) => agg.concat({
-    titles: Array.prototype.reduce.call(result.querySelectorAll('.r'), (agg, result, i) => agg.concat(result.innerText), []),
+    titles: Array.prototype.reduce.call(result.querySelectorAll('.r'), (agg, result, i) => agg.concat(result.innerText || 'ERROR: NO INNER TEXT!!!'), []),
     snippet: result.querySelector('.rc .s .st').innerText,
     url: result.querySelector('.rc .r a').getAttribute('href'),
     images: Array.prototype.map.call(result.querySelectorAll('img'), r => ({src: r.getAttribute('src'), width: r.getAttribute('width'), height: r.getAttribute('height')}))
@@ -22,7 +22,7 @@ function googleEvaluator() {
 
 function duckduckgoEvaluator() {
   const results = document.querySelectorAll('#links.results > .result.results_links_deep');
-  
+
   return Array.prototype.reduce.call(results, (agg, result, i) => agg.concat({
     titles: Array.prototype.reduce.call(result.querySelectorAll('.result__title > *:not(.result__check)'), (agg, result, i) => agg.concat(result.innerText), []),
     snippet: result.querySelector('.result__snippet').innerText,
@@ -33,7 +33,7 @@ function duckduckgoEvaluator() {
 
 function bingEvaluator() {
   const results = document.querySelectorAll('#b_results .b_algo');
-  
+
   return Array.prototype.reduce.call(results, (agg, result, i) => agg.concat({
     titles: Array.prototype.reduce.call(result.querySelectorAll('h2 > a'), (agg, result, i) => agg.concat(result.innerText), []),
     snippet: (result.querySelector('.b_caption p') || {}).innerText,
@@ -44,7 +44,7 @@ function bingEvaluator() {
 
 function yahooEvaluator() {
   const results = document.querySelectorAll('.dd.algo.algo-sr');
-  
+
   return Array.prototype.reduce.call(results, (agg, result, i) => agg.concat({
     titles: Array.prototype.reduce.call(result.querySelectorAll('.title > a'), (agg, result, i) => agg.concat(result.innerText), []),
     snippet: (result.querySelector('.compText p') || {}).innerText,
