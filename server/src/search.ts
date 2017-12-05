@@ -72,17 +72,16 @@ export default async (query = 'test', partialResults) => {
 
 function search(query, pagePool, partialResults) {
   return engines.map(async ({name, queryUrl, evaluator}) => {
-    const {page, release} = await pagePool.getPage();
+    const {page, release} = await pagePool.getPage(),
+          [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`)),
+                  results = await page.evaluate(evaluator),
+              returnValue = {name, results, start, end};
 
-    const [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`));
-
-    const results = await page.evaluate(evaluator);
-
-    partialResults({name, results, start, end});
+    partialResults(returnValue);
 
     release();
 
-    return {name, results, start, end};
+    return returnValue;
   });
 }
 
