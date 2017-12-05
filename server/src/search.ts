@@ -86,11 +86,23 @@ function search(query, pagePool, partialResults) {
 
 const asyncBenchmark = async fn => [new Date().getTime(), await fn(), new Date().getTime()];
 
-const groupBy = (list, selector, transform = a => a, groups = {}) => list.reduce((groups, item) => {
-  const value = selector(item);
-  (groups[value] = groups[value] || []).push(transform(item));
-  return groups;
-})
+const groupBy =
+  (list, selector, transform = a => a, groups = {}) =>
+    list.reduce((groups, item) => {
+      const value = selector(item);
+      pushTo(groups, value, transform(value));
+      // push((groups[value] = groups[value] || []), transform(item));
+      // (groups[value] = groups[value] || []).push(transform(item));
+      return groups;
+    });
+
+function pushTo(obj, key, item) {
+  const stack = (obj[key] = obj[key] || []);
+
+  stack.push(item);
+
+  return stack;
+}
 
 // function groupBy(list, property) {
 //   return list.reduce((groups, item) => {
