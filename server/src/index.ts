@@ -15,24 +15,18 @@ else webServer('../.dist', webPort);
 server.on('connection', socket => {
   console.log('connected');
   socket.on('message', query => {
-    search(query, ({name, results, start, end}) => socket.send(JSON.stringify({query, name, results, start, end})))
-      .catch(error => socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())])));
+    search(
+      query,
+      ({name, results, start, end}) =>
+        socket.send(JSON.stringify({query, name, results, start, end})))
+    .then(o => console.log(o))
+    .catch(error => socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())])));
   });
 });
 
 console.log('ws listening on', port);
 console.log('http listening on', webPort);
 
-
-
-// search('test', partialResults)
-//   .then(use(({urls}) => {
-//     const list = Object.keys(urls).map(url => [url, urls[url]]);
-//     list.sort(([_, a], [__, b]) => b.length - a.length);
-//     console.log(list);
-//   }))
-//   .then(use(printResults))
-//   .catch(error => console.log('error', error));
 
 function partialResults({name, results}) {
   const resultsToPrint = 2;

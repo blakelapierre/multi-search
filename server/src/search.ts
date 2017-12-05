@@ -57,17 +57,25 @@ class PagePool {
 const pagePool = new PagePool(puppeteer.launch());
 
 export default async (query = 'test', partialResults) => {
-  const start = new Date().getTime(),
-        results = await Promise.all(search(query, pagePool, partialResults)),
-        end = new Date().getTime(),
-        urls = results.reduce((urls, {name, results}, i) => {
-          return results.reduce((urls, {url}, i) => {
-            (urls[url] = urls[url] || []).push([name, i]);
-            return urls;
-          }, urls);
-        }, {});
+  const [start, results, end] = await asyncBenchmark(() => Promise.all(search(query, pagePool, partialResults))),
+                         urls = results
+                                  .reduce(
+                                    (urls, {name, results}, i) =>
+                                      results.reduce((urls, {url}, i) => {
+                                        (urls[url] = urls[url] || []).push([name, i]);
+                                        return urls;
+                                      }, urls), {});
+  // const start = new Date().getTime(),
+  //       results = await Promise.all(search(query, pagePool, partialResults)),
+  //       end = new Date().getTime(),
+  //       urls = results.reduce((urls, {name, results}, i) => {
+  //         return results.reduce((urls, {url}, i) => {
+  //           (urls[url] = urls[url] || []).push([name, i]);
+  //           return urls;
+  //         }, urls);
+  //       }, {});
 
-  return {urls, results, start, end};
+  return {query, urls, results, start, end};
 };
 
 function search(query, pagePool, partialResults) {
