@@ -65,15 +65,6 @@ export default async (query = 'test', partialResults) => {
                                         (urls[url] = urls[url] || []).push([name, i]);
                                         return urls;
                                       }, urls), {});
-  // const start = new Date().getTime(),
-  //       results = await Promise.all(search(query, pagePool, partialResults)),
-  //       end = new Date().getTime(),
-  //       urls = results.reduce((urls, {name, results}, i) => {
-  //         return results.reduce((urls, {url}, i) => {
-  //           (urls[url] = urls[url] || []).push([name, i]);
-  //           return urls;
-  //         }, urls);
-  //       }, {});
 
   return {query, urls, results, start, end};
 };
