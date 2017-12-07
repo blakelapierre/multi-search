@@ -243,35 +243,55 @@ multi-search {
 
     padding: 2em 1em;
 
-    top {
-      flex: 1 1 auto;
+    sidebar {
+      display: flex;
+      flex-direction: column;
 
-      max-width: 40vw;
+      selected {
+        text-align: center;
 
-      font-size: smaller;
+        urls {
+          display: block;
 
-      urls {
-        display: block;
+          text-align: left;
+        }
 
-        url {
-          display: flex;
+        button {
+          display: inline-block;
+          margin: 1em 0;
+        }
+      }
 
-          margin: 0.1em 0;
+      top {
+        flex: 1 1 auto;
 
-          word-break: break-word;
+        max-width: 40vw;
 
-          &.highlight {
-            background-color: rgba(255, 255, 255, 0.1);
-          }
+        font-size: smaller;
 
-          engine-icons {
-            flex: 0 0 auto;
-          }
+        urls {
+          display: block;
 
-          a {
-            margin-left: 0.5em;
+          url {
+            display: flex;
 
-            text-decoration: none;
+            margin: 0.1em 0;
+
+            word-break: break-word;
+
+            &.highlight {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            engine-icons {
+              flex: 0 0 auto;
+            }
+
+            a {
+              margin-left: 0.5em;
+
+              text-decoration: none;
+            }
           }
         }
       }
@@ -343,6 +363,22 @@ multi-search {
 
             &.highlight {
               background-color: rgba(255, 255, 255, 0.1);
+
+              input {
+                visibility: visible;
+              }
+            }
+
+            &.selected {
+              input {
+                visibility: visible;
+              }
+            }
+
+            input {
+              transform: scale(0.8);
+
+              visibility: hidden;
             }
 
             a {

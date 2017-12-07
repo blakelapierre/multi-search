@@ -29,11 +29,28 @@ const SHOW_MORE = (_, result) => {
 };
 // jshint ignore:end
 
+const TOGGLE_URL = (_, url) => {
+  if (_.selectedURLs[url] === undefined) _.selectedURLs[url] = true;
+  else delete _.selectedURLs[url];
+};
+
 // jshint ignore:start
 const SET_HIGHLIGHT_URL = (_, url) => {
   _.highlightUrl = url;
 };
 // jshint ignore:end
+
+
+const OPEN_URLS = (urls) => {
+  console.log('urls', urls);
+  urls.forEach(url => {
+    const a = document.createElement('a');
+    a.target = '_blank';
+    a.href = url;
+    a.click();
+    console.log(url);
+  });
+};
 
 const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation}) => (
   // jshint ignore:start
@@ -88,7 +105,10 @@ const Engine = ({engine: {name, queryUrl}, index}, {ui: {query}, view, mutation}
 const Results = (_, {searches: [search], config: {resultsView}}) => search ? (
   <results>
     {resultsView === 'byEngine' ? <ResultsByEngine /> : <ResultsByURL />}
-    <Top />
+    <sidebar>
+      <SelectedURLs />
+      <Top />
+    </sidebar>
   </results>
 ) : undefined;
 // jshint ignore:end
@@ -135,15 +155,43 @@ const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3,
 );
 // jshint ignore:end
 
-const Result = ({titles, snippet, url, images}, {highlightUrl, mutation}) => (
+function combine(mutation, ...ms) {
+  const fns = ms.map(([...m]) => mutation(...m));
+  return (...args) => {
+    return fns.map(fn => fn(...args));
+  };
+}
+
+  // <item onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}>
+const Result = ({titles, snippet, url, images}, {highlightUrl, selectedURLs, mutation}) => (
   // jshint ignore:start
-  <item onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}>
+  <item
+    onMouseOver={mutation(SET_HIGHLIGHT_URL, url)}
+    className={{'highlight': url === highlightUrl, 'selected': selectedURLs[url]}}>
+    <input type="checkbox" checked={selectedURLs[url]} onClick={mutation(TOGGLE_URL, url)} />
     <a href={url}>{titles[0]}</a>
     <div>
       {images && images.length > 0 ? images.map(({src, height, width}) => <img src={src} width={width} height={height} />) : undefined}
       <snippet>{snippet}</snippet>
     </div>
   </item>
+  // jshint ignore:end
+);
+
+const SelectedURLs = (_, {selectedURLs, mutation}) => (
+  // jshint ignore:start
+  <selected>
+    <urls>
+      {Object.keys(selectedURLs).map(url =>(
+        <div>
+          <input type="checkbox" checked={true} onClick={mutation(TOGGLE_URL, url)} />
+          <a href={url}>{url}</a>
+        </div>
+      ))}
+    </urls>
+
+    {Object.keys(selectedURLs).length > 0 ? <button onClick={() => OPEN_URLS(Object.keys(selectedURLs))}>^ Open URLs ^</button> : undefined}
+  </selected>
   // jshint ignore:end
 );
 
@@ -192,6 +240,8 @@ render(
       resultsView: 'byEngine' // 'byEngine' | 'byURL'
       // resultsView: 'byURL' // 'byEngine' | 'byURL'
     },
+
+    selectedURLs: {},
 
     searches: []
   }, document.body
