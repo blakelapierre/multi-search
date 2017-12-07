@@ -38,7 +38,6 @@ const SET_HIGHLIGHT_URL = (_, url) => {
 const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation}) => (
   // jshint ignore:start
   <multi-search className={{'searched': query}}>
-  {console.log(query, search)}
     {query && !search ? mutation(SEARCH, mutation)(query) : undefined}
     <Query />
     <History />
@@ -55,7 +54,7 @@ const Query = (_, {ui: {buildingQuery = ''}, mutation}) => (
       {buildingQuery ? <button onClick={mutation(TOGGLE_VIEW)}></button> : undefined}
     </options>
     <form onSubmit={mutation(SEARCH, mutation)} action="javascript:">
-      <input placeholder="Enter Query Text" value={buildingQuery} onInput={mutation(QUERY_CHANGED)} tabindex="0" autoFocus />
+      <input placeholder="Enter Query Text" value={buildingQuery} onInput={mutation(QUERY_CHANGED)} autoFocus />
     </form>
   </query>
 );
@@ -85,16 +84,37 @@ const Engine = ({engine: {name, queryUrl}, index}, {ui: {query}, view, mutation}
   // jshint ignore:end
 );
 
-const Results = (_, {searches: [search], highlightUrl, mutation}) => search ? (
-  // jshint ignore:start
+// jshint ignore:start
+const Results = (_, {searches: [search], config: {resultsView}}) => search ? (
   <results>
-    <sites>
-      {search.responses.map((response, i) => <EngineResults {...response} i={i} search={search} />)}
-    </sites>
+    {resultsView === 'byEngine' ? <ResultsByEngine /> : <ResultsByURL />}
     <Top />
   </results>
-  // jshint ignore:end
 ) : undefined;
+// jshint ignore:end
+
+// jshint ignore:start
+const ResultsByEngine = (_, {searches: [search], highlightUrl, mutation}) => (
+  <results-by-engine>
+    {search.responses.map((response, i) => <EngineResults {...response} i={i} search={search} />)}
+  </results-by-engine>
+);
+// jshint ignore:end
+
+// jshint ignore:start
+const ResultsByURL = (_, {searches: [search], highlightUrl, mutation}) => (
+  <results-by-url>
+    {Object.values(
+      search.responses.reduce(
+        (agg, {name, results}, i) =>
+          results.reduce((agg, result) =>
+            (agg[url] = agg[url] || {url, results: []}).results.push({name, result}), agg), {}))
+     .map(({url, results}) => (
+      <span>{url}</span>
+     ))}
+  </results-by-url>
+);
+// jshint ignore:end
 
 // jshint ignore:start
 const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i, search: {responses}}, {mutation}) => (
@@ -167,6 +187,12 @@ render(
       buildingQuery: query,
       query
     },
+
+    config: {
+      resultsView: 'byEngine' // 'byEngine' | 'byURL'
+      // resultsView: 'byURL' // 'byEngine' | 'byURL'
+    },
+
     searches: []
   }, document.body
   // jshint ignore:end
