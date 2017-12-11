@@ -70,7 +70,15 @@ export default async (query = 'test', partialResults) => {
 };
 
 function search(query, pagePool, partialResults) {
-  return engines.map(async ({name, queryUrl, evaluator}) => {
+  return engines.map(async ({name, queryUrl, evaluator, cache}) => {
+    const cachedValue = cache.retrieve(query);
+
+    if (cachedValue && (cachedValue.start + 60 * 1000) >= new Date().getTime()) {
+      partialResults(cachedValue);
+
+      return cachedValue;
+    }
+
     const {page, release} = await pagePool.getPage(),
           [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`)),
                   results = await page.evaluate(evaluator),
@@ -79,6 +87,8 @@ function search(query, pagePool, partialResults) {
     partialResults(returnValue);
 
     release();
+
+    cache.put(query, returnValue);
 
     return returnValue;
   });

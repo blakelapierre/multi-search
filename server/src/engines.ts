@@ -1,5 +1,23 @@
 class Engine {
   constructor(public name, public queryUrl, public evaluator) { }
+
+  private _cache = new Cache();
+
+  get cache() {
+    return this._cache;
+  }
+}
+
+class Cache {
+  private store = {};
+
+  retrieve(key) {
+    return this.store[key];
+  }
+
+  put(key, data) {
+    return this.store[key] = data;
+  }
 }
 
 const Google = new Engine('Google','https://google.com/search?q=', googleEvaluator),
