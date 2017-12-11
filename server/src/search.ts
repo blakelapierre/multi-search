@@ -58,10 +58,10 @@ const pagePool = new PagePool(puppeteer.launch());
 
 export default async (query = 'test', partialResults) => {
   const [start, results, end] = await asyncBenchmark(() => Promise.all(search(query, pagePool, partialResults))),
-                         urls = results
+                         urls = (results || [])
                                   .reduce(
                                     (urls, {name, results}, i) =>
-                                      results.reduce((urls, {url}, i) => {
+                                      (results || []).reduce((urls, {url}, i) => {
                                         (urls[url] = urls[url] || []).push([name, i]);
                                         return urls;
                                       }, urls), {});
@@ -79,18 +79,26 @@ function search(query, pagePool, partialResults) {
       return cachedValue;
     }
 
-    const {page, release} = await pagePool.getPage(),
-          [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`)),
-                  results = await page.evaluate(evaluator),
-              returnValue = {name, results, start, end};
+    const {page, release} = await pagePool.getPage();
 
-    partialResults(returnValue);
+    try {
+      const [start, _, end] = await asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`));
+      try {
+        const results = await page.evaluate(evaluator);
+
+
+        const returnValue = {name, results, start, end};
+
+        partialResults(returnValue);
+
+        cache.put(query, returnValue);
+
+        release();
+        return returnValue;
+      } catch(e) {console.error(e);}
+    } catch(e) {console.error(e);}
 
     release();
-
-    cache.put(query, returnValue);
-
-    return returnValue;
   });
 }
 

@@ -20,7 +20,10 @@ server.on('connection', socket => {
       ({name, results, start, end}) =>
         socket.send(JSON.stringify({query, name, results, start, end})))
     .then(o => console.log(o))
-    .catch(error => socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())])));
+    .catch(error => {
+      console.error(error);
+      socket.send(JSON.stringify(['error', query, JSON.stringify(error.toString())]));
+    });
   });
 });
 
