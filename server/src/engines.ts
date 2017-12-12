@@ -1,3 +1,5 @@
+import {createEvaluator} from './createEvaluator';
+
 class Engine {
   constructor(public name, public queryUrl, public evaluator) { }
 
@@ -19,22 +21,8 @@ class Cache {
     return this.store[key] = data;
   }
 }
-
-const library = `${reduce.toString()}\n${map.toString()}`;
-
-function createEvaluator(fn) {
-  return new Function(`${library}\n${fn.toString().split('\n').slice(1, -1).join('\n')}`);
-}
-
-function reduce(list, fn, initial) {
-  return Array.prototype.reduce.call(list, fn, initial);
-}
-
-function map(list, fn) {
-  return Array.prototype.map.call(list, fn);
-}
-
-const googleEvaluator = createEvaluator(() => {
+//                                        v compiler trick!
+const googleEvaluator = createEvaluator(({map, reduce}) => {
   const results = document.querySelectorAll('.srg > .g');
 
   return reduce(results, (agg, result, i) => agg.concat({
@@ -45,7 +33,7 @@ const googleEvaluator = createEvaluator(() => {
   }), []);
 });
 
-const duckduckgoEvaluator = createEvaluator(() => {
+const duckduckgoEvaluator = createEvaluator(({map, reduce}) => {
   const results = document.querySelectorAll('#links.results > .result.results_links_deep');
 
   return reduce(results, (agg, result, i) => agg.concat({
@@ -60,7 +48,7 @@ const duckduckgoEvaluator = createEvaluator(() => {
   }
 });
 
-const bingEvaluator = createEvaluator(() => {
+const bingEvaluator = createEvaluator(({map, reduce}) => {
   const results = document.querySelectorAll('#b_results .b_algo');
 
   return reduce(results, (agg, result, i) => agg.concat({
@@ -75,7 +63,7 @@ const bingEvaluator = createEvaluator(() => {
   }
 });
 
-const yahooEvaluator = createEvaluator(() => {
+const yahooEvaluator = createEvaluator(({map, reduce}) => {
   const results = document.querySelectorAll('.dd.algo.algo-sr');
 
   return reduce(results, (agg, result, i) => agg.concat({
