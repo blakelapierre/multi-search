@@ -195,10 +195,18 @@ const SelectedURLs = (_, {selectedURLs, mutation}) => (
   // jshint ignore:end
 );
 
-const Top = (_, {searches: [{top}], highlightUrl, engines, mutation}) => (
+const Top = (_, {searches: [{responsesByEngineName, top}], highlightUrl, mutation}) => (
   // jshint ignore:start
   <top>
-    {top ? (<urls>{top.map(([url, engines]) => (<url onMouseOver={mutation(SET_HIGHLIGHT_URL, url)} className={{'highlight': url === highlightUrl}}><EngineIcons engines={engines} /><a href={url} title={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a></url>))}</urls>) : undefined}
+    {top ? (
+      <urls>
+        {top.map(([url, positions]) => (
+          <url title={positions.map(([engine, index]) => `${engine}: ${responsesByEngineName[engine].results[index].snippet}`).concat(url).join('\n\n')}
+               onMouseOver={mutation(SET_HIGHLIGHT_URL, url)}
+               className={{'highlight': url === highlightUrl}}>
+            <EngineIcons engines={positions} />
+            <a href={url}>{url.slice(0, Math.min(80, url.length))}{url.length > 75 ? '...' : ''}</a>
+          </url>))}</urls>) : undefined}
   </top>
   // jshint ignore:end
 );
@@ -213,23 +221,31 @@ const EngineIcons = ({engines}) => (
 
 const query = decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' ');
 
+const engines = [{
+  'name': 'Google',
+  'queryUrl': 'https://google.com/search?q='
+},{
+  'name': 'DuckDuckGo',
+  'queryUrl': 'https://duckduckgo.com?q='
+},{
+  'name': 'Bing',
+  'queryUrl': 'https://bing.com?q='
+},{
+  'name': 'Yahoo',
+  'queryUrl': 'https://search.yahoo.com/search?p='
+}];
+
+const engineMap = engines.reduce((agg, engine) => {
+  agg[engine.name] = engine;
+  return agg;
+}, {});
+
 render(
   // jshint ignore:start
   MultiSearch, {
     // enteredQuery: decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' '),
-    engines: [{
-      'name': 'Google',
-      'queryUrl': 'https://google.com/search?q='
-    },{
-      'name': 'DuckDuckGo',
-      'queryUrl': 'https://duckduckgo.com?q='
-    },{
-      'name': 'Bing',
-      'queryUrl': 'https://bing.com?q='
-    },{
-      'name': 'Yahoo',
-      'queryUrl': 'https://search.yahoo.com/search?p='
-    }],
+    engines,
+    engineMap,
 
     ui: {
       buildingQuery: query,

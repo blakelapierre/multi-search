@@ -29,7 +29,8 @@ class ServerConnection {
 const serverConnection = new ServerConnection(({data}) => {
   const {query, name, results, start, end} = JSON.parse(data);
 
-  waitingQueries[query]({query, name, results, start, end});
+  const waiter = waitingQueries[query];
+  if (waiter) waiter({query, name, results, start, end});
 });
 
 export default search;
@@ -39,6 +40,7 @@ function search(query, mutation) {
     query,
     time: new Date().getTime(),
     responses: [],
+    responsesByEngineName: {},
     urls: {},
     top: []
   };
@@ -49,7 +51,7 @@ function search(query, mutation) {
     serverConnection.send(query);
 
     waitingQueries[query] = response => {
-      result.urls = response.results.reduce((urls, {url}, i) => {
+      result.urls = (response.results || []).reduce((urls, {url}, i) => {
                   (urls[url] = urls[url] || []).push([response.name, i]);
                   return urls;
                 }, result.urls);
@@ -62,6 +64,7 @@ function search(query, mutation) {
       });
 
       result.responses.push(response);
+      result.responsesByEngineName[response.name] = response;
       mutation(result, response);
     };
   }
