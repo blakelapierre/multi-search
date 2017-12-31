@@ -137,10 +137,10 @@ const ResultsByURL = (_, {searches: [search], highlightUrl, mutation}) => (
 // jshint ignore:end
 
 // jshint ignore:start
-const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i, search: {responses}}, {mutation}) => (
+const EngineResults = ({name, results, start, end, sliceStart = 0, sliceEnd = 3, i, search: {responses}, query}, {mutation, engines}) => (
   <result>
     <engine>
-      <img src={`//${name}.com/favicon.ico`} class="engine-icon" />
+      <a href={engines.map(({name: engineName, queryUrl}) => name === engineName ? `${queryUrl}${query}` : undefined).join('')}><img src={`//${name}.com/favicon.ico`} class="engine-icon" /></a>
       <name>{name}</name>
       <time>{end - start}<units>ms</units> <bar style={{width: `${2 * (end - start) / 1000}em`}}></bar></time>
     </engine>
