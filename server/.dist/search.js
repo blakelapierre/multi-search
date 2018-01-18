@@ -43,6 +43,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                 }
                 return {
                     page,
+                    // release() { return (next = this.reservations.pop()) ? this.freePages.push(page) : next(page); }
                     release: (page => {
                         const next = this.reservations.pop();
                         if (next === undefined)
@@ -59,32 +60,54 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     }
     const pagePool = new PagePool(puppeteer.launch());
     exports.default = (query = 'test', partialResults) => __awaiter(this, void 0, void 0, function* () {
-        const start = new Date().getTime(), results = yield Promise.all(search(query, pagePool, partialResults)), end = new Date().getTime(), urls = results.reduce((urls, { name, results }, i) => {
-            return results.reduce((urls, { url }, i) => {
-                (urls[url] = urls[url] || []).push([name, i]);
-                return urls;
-            }, urls);
-        }, {});
-        return { urls, results, start, end };
+        const [start, results, end] = yield asyncBenchmark(() => Promise.all(search(query, pagePool, partialResults))), urls = (results || [])
+            .reduce((urls, { name, results }, i) => (results || []).reduce((urls, { url }, i) => {
+            (urls[url] = urls[url] || []).push([name, i]);
+            return urls;
+        }, urls), {});
+        return { query, urls, results, start, end };
     });
     function search(query, pagePool, partialResults) {
-        return engines_1.default.map(({ name, queryUrl, evaluator }) => __awaiter(this, void 0, void 0, function* () {
+        return engines_1.default.map(({ name, queryUrl, evaluator, cache }) => __awaiter(this, void 0, void 0, function* () {
+            const cachedValue = cache.retrieve(query);
+            if (cachedValue && (cachedValue.start + 60 * 1000) >= new Date().getTime()) {
+                partialResults(cachedValue);
+                return cachedValue;
+            }
             const { page, release } = yield pagePool.getPage();
-            // page.on('console', ({args}) => console.log(`${name} console: ${args.join(' ')}`));
-            const start = new Date().getTime();
-            yield page.goto(`${queryUrl}${encodeURI(query)}`);
-            const end = new Date().getTime();
-            const results = yield page.evaluate(evaluator);
-            partialResults({ name, results, start, end });
+            try {
+                const [start, _, end] = yield asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`));
+                try {
+                    const results = yield page.evaluate(evaluator);
+                    const returnValue = { name, results, start, end };
+                    partialResults(returnValue);
+                    cache.put(query, returnValue);
+                    release();
+                    return returnValue;
+                }
+                catch (e) {
+                    console.error(e);
+                }
+            }
+            catch (e) {
+                console.error(e);
+            }
             release();
-            return { name, results, start, end };
         }));
     }
+    const asyncBenchmark = (fn) => __awaiter(this, void 0, void 0, function* () { return [new Date().getTime(), yield fn(), new Date().getTime()]; });
     const groupBy = (list, selector, transform = a => a, groups = {}) => list.reduce((groups, item) => {
         const value = selector(item);
-        (groups[value] = groups[value] || []).push(transform(item));
+        pushTo(groups, value, transform(value));
+        // push((groups[value] = groups[value] || []), transform(item));
+        // (groups[value] = groups[value] || []).push(transform(item));
         return groups;
     });
+    function pushTo(obj, key, item) {
+        const stack = (obj[key] = obj[key] || []);
+        stack.push(item);
+        return stack;
+    }
 });
 // function groupBy(list, property) {
 //   return list.reduce((groups, item) => {

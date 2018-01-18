@@ -21,9 +21,17 @@ class Cache {
     return this.store[key] = data;
   }
 }
+
 //                                        v compiler trick!
 const googleEvaluator = createEvaluator(({map, reduce}) => {
   const results = document.querySelectorAll('.srg > .g');
+
+  // {
+  //   titles: oreduce({'.r': (agg, result, i) => agg.concat(result.innerText || 'ERROR: NO INNER TEXT!!!'), [])}),
+  //   snippet: {'.rc .s .st': a => a.innerText},
+  //   url: {'.rc .r a': a => a.getAttribute('href')},
+  //   images: omap({'img': r => ({src: r.getAttribute('src'), width: r.getAttribute('width'), height: r.getAttribute('height')})})
+  // }
 
   return reduce(results, (agg, result, i) => agg.concat({
     titles: reduce(result.querySelectorAll('.r'), (agg, result, i) => agg.concat(result.innerText || 'ERROR: NO INNER TEXT!!!'), []),
@@ -42,10 +50,6 @@ const duckduckgoEvaluator = createEvaluator(({map, reduce}) => {
     url: result.querySelector('.result__url').getAttribute('href'),
     images: map(result.querySelectorAll('img:not(.result__icon__img)'), r => ({src: (r.getAttribute('src') || '').replace(/^\/[^\/]/, 'http://duckduckgo.com/'), width: r.getAttribute('width'), height: r.getAttribute('height')}))
   }), []);
-
-  function reduce(list, fn, initial) {
-    return Array.prototype.reduce.call(list, fn, initial);
-  }
 });
 
 const bingEvaluator = createEvaluator(({map, reduce}) => {
@@ -57,10 +61,6 @@ const bingEvaluator = createEvaluator(({map, reduce}) => {
     url: result.querySelector('h2 > a').getAttribute('href'),
     images: map(result.querySelectorAll('img'), r => ({src: (r.getAttribute('src') || '').replace(/^\/[^\/]/, 'https://www.bing.com/'), width: r.getAttribute('width'), height: r.getAttribute('height')}))
   }), []);
-
-  function reduce(list, fn, initial) {
-    return Array.prototype.reduce.call(list, fn, initial);
-  }
 });
 
 const yahooEvaluator = createEvaluator(({map, reduce}) => {
@@ -72,10 +72,6 @@ const yahooEvaluator = createEvaluator(({map, reduce}) => {
     url: result.querySelector('.title > a').getAttribute('href'),
     images: map(result.querySelectorAll('img'), r => ({src: r.getAttribute('src') , width: r.getAttribute('width'), height: r.getAttribute('height')}))
   }), []);
-
-  function reduce(list, fn, initial) {
-    return Array.prototype.reduce.call(list, fn, initial);
-  }
 });
 
 const Google = new Engine('Google','https://google.com/search?q=', googleEvaluator),

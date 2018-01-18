@@ -3,7 +3,7 @@
   "description": "Search multiple web search engines simultaneously from a simple interface.",
   "repository": "https://github.com/blakelapierre/multi-search-www",
   "version": "0.0.1",
-  "main": ".dev/index.js",
+  "main": "server/.dist/index.js",
   "dependencies": {
     "preact-cycle": "^0.5.1"
   },
@@ -49,6 +49,7 @@
     "lodash": "^4.17.4",
     "multipipe": "^1.0.2",
     "partialify": "^3.1.6",
+    "tsify": "^3.0.3",
     "vinyl-source-stream": "^1.1.0"
   },
   "browserify": {

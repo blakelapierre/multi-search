@@ -1,8 +1,9 @@
 #!/bin/bash
 
 rm -rf app
-mkdir app
+mkdir -p app/node_modules
 
-cp -r ../.package ./app
+cp -r ../.dist ./app
+cp ../package.json ./app
 
-sudo docker build -t blakelapierre/base-node .
+sudo docker build -t multi-search/www .

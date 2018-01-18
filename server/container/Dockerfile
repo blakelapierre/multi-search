@@ -1,5 +1,9 @@
-FROM mhart/alpine-iojs-base
+FROM zenato/puppeteer
+
+USER root
 
 ADD ./app /app
 
-CMD node /app/.package/app.js
+RUN cd /app && npm install --production
+
+CMD node /app/.dist/index.js
