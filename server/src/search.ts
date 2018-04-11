@@ -86,6 +86,7 @@ function search(query, pagePool, partialResults) {
       try {
         const results = await page.evaluate(evaluator);
 
+if (name === 'Bing') console.log({results});
 
         const returnValue = {name, results, start, end};
 

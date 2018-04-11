@@ -79,6 +79,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                 const [start, _, end] = yield asyncBenchmark(() => page.goto(`${queryUrl}${encodeURI(query)}`));
                 try {
                     const results = yield page.evaluate(evaluator);
+                    if (name === 'Bing')
+                        console.log({ results });
                     const returnValue = { name, results, start, end };
                     partialResults(returnValue);
                     cache.put(query, returnValue);
