@@ -60,7 +60,7 @@
     const bingEvaluator = createEvaluator_1.createEvaluator(({ map, reduce }) => {
         const results = document.querySelectorAll('#b_results .b_algo');
         return reduce(results, (agg, result, i) => agg.concat({
-            titles: reduce(result.querySelectorAll('.b_algoheader h2 a'), (agg, result, i) => result.innerText === '' ? agg : agg.concat(result.innerText), []),
+            titles: reduce(result.querySelectorAll('h2 a'), (agg, result, i) => result.innerText === '' ? agg : agg.concat(result.innerText), []),
             snippet: (result.querySelector('.b_caption p') || {}).innerText,
             url: result.querySelector('h2 > a').getAttribute('href'),
             images: map(result.querySelectorAll('img'), r => ({ src: (r.getAttribute('src') || '').replace(/^\/[^\/]/, 'https://www.bing.com/'), width: r.getAttribute('width'), height: r.getAttribute('height') }))
