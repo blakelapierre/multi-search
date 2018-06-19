@@ -3,11 +3,21 @@ import { h, render } from 'preact-cycle';
 import searchService from './searchService';
 
 // jshint ignore:start
-const SEARCH = ({ui: {buildingQuery}, searches, ...p}, mutation) => ({
-  ui: {query: buildingQuery, buildingQuery},
-  searches: [searchService(buildingQuery, mutation(ADD_RESPONSE))].concat(searches),
-  ...p
-});
+const SEARCH = ({ui: {buildingQuery}, searches, ...p}, mutation) => {
+  window.history.pushState(undefined, undefined, `index.html?q=${buildingQuery}`);
+
+  return {
+    ui: {query: buildingQuery, buildingQuery},
+    searches: [searchService(buildingQuery, mutation(ADD_RESPONSE))].concat(searches),
+    ...p
+  };
+};
+
+// const SEARCH = ({ui: {buildingQuery}, searches, ...p}, mutation) => ({
+//   ui: {query: buildingQuery, buildingQuery},
+//   searches: [searchService(buildingQuery, mutation(ADD_RESPONSE))].concat(searches),
+//   ...p
+// });
 
 const ADD_RESPONSE = (_, result) => {
   // mostly a placeholder to trigger a UI update right now...
@@ -220,7 +230,7 @@ const EngineIcons = ({engines}) => (
 );
 
 const query = decodeURIComponent(window.location.search.substr(1).split('=')[1] || '').replace(/\+/g, ' ');
-
+console.log({query});
 const engines = [{
   'name': 'Google',
   'queryUrl': 'https://google.com/search?q='
