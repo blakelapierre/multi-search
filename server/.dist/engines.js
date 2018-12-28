@@ -43,7 +43,7 @@
         // }
         return reduce(results, (agg, result, i) => agg.concat({
             titles: reduce(result.querySelectorAll('.r'), (agg, result, i) => agg.concat(result.innerText || 'ERROR: NO INNER TEXT!!!'), []),
-            snippet: result.querySelector('.rc .s .st').innerText,
+            snippet: (result.querySelector('.rc .s .st') || {}).innerText,
             url: result.querySelector('.rc .r a').getAttribute('href'),
             images: map(result.querySelectorAll('img'), r => ({ src: r.getAttribute('src'), width: r.getAttribute('width'), height: r.getAttribute('height') }))
         }), []);

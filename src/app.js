@@ -62,12 +62,13 @@ const OPEN_URLS = (urls) => {
   });
 };
 
-const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], mutation}) => (
+const MultiSearch = ({engines, view, ui: {query}}, {searches: [search], selectedURLs, mutation}) => (
   // jshint ignore:start
   <multi-search className={{'searched': query}}>
     {query && !search ? mutation(SEARCH, mutation)(query) : undefined}
     <Query />
     <History />
+    <URLFrames urls={selectedURLs} />
     {view === 'iframe' ? <Engines /> : <Results />}
   </multi-search>
   // jshint ignore:end
@@ -187,6 +188,18 @@ const Result = ({titles, snippet, url, images}, {highlightUrl, selectedURLs, mut
   </item>
   // jshint ignore:end
 );
+
+// jshint ignore:start
+const URLFrames = ({urls = {}}) => (
+  <url-frames>
+    {Object.keys(urls).map(url => <URLFrame key={url} url={url} />)}
+  </url-frames>
+);
+
+const URLFrame = ({url}) => (
+  <iframe src={url} />
+);
+// jshint ignore:end
 
 const SelectedURLs = (_, {selectedURLs, mutation}) => (
   // jshint ignore:start
